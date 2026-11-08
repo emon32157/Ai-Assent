@@ -61,7 +61,7 @@
     <string name="status_hint_local_doing">Doing it on this phone.</string>
     <string name="status_hint_local_speaking">Answered on this phone.</string>
     <string name="status_hint_connecting">Connecting to Gemini…</string>
-    <string name="status_hint_gemini_listening">Talk any time, in English, Hindi, Bengali or Hinglish.</string>
+    <string name="status_hint_gemini_listening">Talk any time, in English or Bengali.</string>
     <string name="status_hint_speaking">Tap the orb to cut in.</string>
     <string name="status_hint_standby_wake">Say \"%s\", or tap the mic.</string>
     <string name="status_hint_standby_tap">Tap the mic to talk.</string>
@@ -93,7 +93,7 @@
 
     <!-- Automations Screen -->
     <string name="automations_title">Automations</string>
-    <string name="automations_subtitle">Say \"%s\", then the command. English, Hindi, Bengali and Hinglish.</string>
+    <string name="automations_subtitle">Say \"%s\", then the command. English and Bengali.</string>
     <string name="routines_title">Routines</string>
     <string name="routines_description">Say a routine\'s name to run its steps. Make one by voice: \"make a routine called good night: alarm at 6:30, what\'s on tomorrow\".</string>
     <string name="group_on_phone_title">On this phone</string>
@@ -105,27 +105,27 @@
 
     <!-- Automations Commands -->
     <string name="cmd_volume">Volume</string>
-    <string name="cmd_volume_eg">\"Volume 30 percent kar do\" · \"volume badhao\" · \"phone mute karo\"</string>
+    <string name="cmd_volume_eg">\"Set volume to 30 percent\" · \"volume up\" · \"mute phone\"</string>
     <string name="cmd_music">Music</string>
-    <string name="cmd_music_eg">\"Music pause kar do\" · \"agla gaana\" · \"resume\"</string>
+    <string name="cmd_music_eg">\"Pause music\" · \"next song\" · \"resume\"</string>
     <string name="cmd_flashlight">Flashlight</string>
-    <string name="cmd_flashlight_eg">\"Flashlight on karo\" · \"torch band karo\"</string>
+    <string name="cmd_flashlight_eg">\"Turn on flashlight\" · \"turn off torch\"</string>
     <string name="cmd_open_apps">Open apps</string>
-    <string name="cmd_open_apps_eg">\"YouTube kholo\" · \"open Calendar\" · \"Camera chalu karo\"</string>
+    <string name="cmd_open_apps_eg">\"Open YouTube\" · \"open Calendar\" · \"launch Camera\"</string>
     <string name="cmd_time_date_battery">Time, date, battery</string>
-    <string name="cmd_time_date_battery_eg">\"Kitne baje hai?\" · \"aaj ki date\" · \"kitni battery hai\"</string>
+    <string name="cmd_time_date_battery_eg">\"What\'s the time?\" · \"what day is it\" · \"battery level\"</string>
     <string name="cmd_timers_alarms">Timers and alarms</string>
-    <string name="cmd_timers_alarms_eg">\"5 minute ka timer\" · \"subah 6:30 ka alarm\"</string>
+    <string name="cmd_timers_alarms_eg">\"5 minute timer\" · \"alarm at 6:30 am\"</string>
     <string name="cmd_stop">Stop</string>
-    <string name="cmd_stop_eg">\"Bas\" · \"stop\" · \"never mind\"</string>
+    <string name="cmd_stop_eg">\"Stop\" · \"cancel\" · \"never mind\"</string>
     <string name="cmd_whatsapp">WhatsApp message</string>
-    <string name="cmd_whatsapp_eg">\"WhatsApp Rahul ko bolo main 7 baje aaunga\". Asks if several Rahuls match, opens the chat with the message; you check it and tap Send. With phone control on, it only says \"sent\" once the message shows in the chat.</string>
+    <string name="cmd_whatsapp_eg">\"Tell Rahul on WhatsApp that I will arrive at 7\". Asks if several Rahuls match, opens the chat with the message; you check it and tap Send. With phone control on, it only says \"sent\" once the message shows in the chat.</string>
     <string name="cmd_movie_tickets">Movie tickets</string>
     <string name="cmd_movie_tickets_eg">\"Book 4 tickets for tomorrow evening\". Opens your ticket app or a web search; you pick the show and seats and pay there. It never pays or books for you.</string>
     <string name="cmd_calls">Calls</string>
     <string name="cmd_calls_eg">\"Call Mom\". Asks for confirmation with the number, then places the call directly or opens the dialer.</string>
     <string name="cmd_songs">Songs</string>
-    <string name="cmd_songs_eg">\"Play Kesariya on YouTube Music\"</string>
+    <string name="cmd_songs_eg">\"Play music on YouTube Music\"</string>
     <string name="cmd_screen">Your screen</string>
     <string name="cmd_screen_eg">\"What\'s on my screen?\" · \"reply to this\" (needs phone control)</string>
     <string name="cmd_questions">Questions</string>
@@ -206,7 +206,7 @@
     <string name="settings_local_title">Handle simple commands on the phone</string>
     <string name="settings_local_desc">Volume, music, flashlight, apps, time, timers and alarms run here, without Gemini.</string>
     <string name="settings_network_title">Use the phone\'s speech service</string>
-    <string name="settings_network_desc">Better Hinglish and recognition, but sends what you say after the wake word to that service (usually Google) and needs internet. Off: speech stays on this phone.</string>
+    <string name="settings_network_desc">Better recognition, but sends what you say after the wake word to that service (usually Google) and needs internet. Off: speech stays on this phone.</string>
     <string name="settings_speech_heard_title">Speech heard by</string>
     <string name="engine_on_device">The phone\'s on-device recogniser. No internet needed.</string>
     <string name="engine_offline">Offline model on this phone (Vosk). No internet needed; best with English words.</string>
@@ -231,7 +231,7 @@
     <string name="settings_version">Version %s</string>
 
     <!-- Onboarding -->
-    <string name="onboarding_welcome_desc">A voice assistant for your phone, in English, Hindi, Bengali and Hinglish.</string>
+    <string name="onboarding_welcome_desc">A voice assistant for your phone, in English and Bengali.</string>
     <string name="onboarding_get_started">Get started</string>
     <string name="onboarding_key_title">Your Gemini key</string>
     <string name="onboarding_key_desc">%s uses Google Gemini, with your own key, for anything the phone can\'t do by itself.</string>

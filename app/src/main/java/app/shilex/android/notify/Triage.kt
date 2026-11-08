@@ -33,6 +33,7 @@ object Triage {
     )
     private val NO_REPLY = Regex("""\bno.?reply\b|\bnotifications?@|\bnewsletter""", RegexOption.IGNORE_CASE)
     private val CALL_APPS = setOf("com.android.phone", "com.google.android.dialer", "com.samsung.android.dialer", "com.android.server.telecom")
+    // Safety keywords (OTP, code, link/offer words) stay on purpose as a deny-list.
     private val CODE = Regex(
         """\b(otp|one[- ]time|verification|passcode|security code|login code|code is|pin)\b|ওটিপি|ভেরিফিকেশন|যাচাইকরণ কোড|গোপন কোড|কোড হলো|কোড হল|পিন|পাসকোড|নিরাপত্তা কোড""",
         RegexOption.IGNORE_CASE,

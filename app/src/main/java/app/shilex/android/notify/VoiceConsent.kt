@@ -8,13 +8,15 @@ package app.shilex.android.notify
 object VoiceConsent {
     // Word boundary that respects Indic vowels/modifiers (\p{M}) as part of words
     // (?<![\p{L}\p{M}\p{N}]) ... (?![\p{L}\p{M}\p{N}])
-    private val NO = Regex(
+    // "No always wins": Hindi/Romanized NO words are kept on purpose as a safety deny-list.
+    internal val NO = Regex(
         """(?<![\p{L}\p{M}\p{N}])(no|nope|not|don't|dont|stop|cancel|wait|wrong|change|nahi|nahin|na|mat|ruko|ruk|galat|badlo|नहीं|मत|रुको|रुक|না|নাহ|থামো|বাতিল|করো\s*না|দিও\s*না|থাম|হবে\s*না)(?![\p{L}\p{M}\p{N}])""",
         RegexOption.IGNORE_CASE,
     )
 
-    private val YES = Regex(
-        """(?<![\p{L}\p{M}\p{N}])(yes|yeah|yep|yup|ok|okay|sure|send|send\s+it|call|call\s+him|call\s+her|go\s+ahead|correct|right|haan|han|haa|ha|ji|bhej|bhejo|bhej\s+do|kar\s+do|theek|thik|हाँ|हां|हा|जी|भेजो|भेজ\s+दो|ठीक|হ্যাঁ|হ্যা|জি|ঠিক\s*আছে|করো|কল|দাও|পাঠাও|পাঠিয়ে\s*দাও|পাঠিয়ে\s*দাও)(?![\p{L}\p{M}\p{N}])""",
+    // English and Bengali consent words only; Devanagari/Hindi YES words and duplicates removed.
+    internal val YES = Regex(
+        """(?<![\p{L}\p{M}\p{N}])(yes|yeah|yep|yup|ok|okay|sure|send|send\s+it|call|call\s+him|call\s+her|go\s+ahead|correct|right|হ্যাঁ|হ্যা|জি|ঠিক\s*আছে|করো|কল|দাও|পাঠাও|পাঠিয়ে\s*দাও)(?![\p{L}\p{M}\p{N}])""",
         RegexOption.IGNORE_CASE,
     )
 

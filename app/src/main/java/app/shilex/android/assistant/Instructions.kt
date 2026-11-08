@@ -6,13 +6,11 @@ import java.time.format.DateTimeFormatter
 
 /** System instructions for the phone. Versioned so behaviour changes are reviewable. */
 object Instructions {
-    const val VERSION = 9
+    const val VERSION = 10
 
     private val LANGUAGE = mapOf(
-        "auto" to "Reply in the same language the user speaks (English, Hindi, Hinglish, or Bengali in Bengali script).",
+        "auto" to "Reply in the same language the user speaks (English, or Bengali in Bengali script). If the user speaks another language, reply in English.",
         "english" to "Reply in English unless the user explicitly asks otherwise.",
-        "hindi" to "Reply in Hindi unless the user explicitly asks otherwise.",
-        "hinglish" to "Reply in natural Hinglish (Hindi-English mix, Roman script in text).",
         "bengali" to "Reply in natural Bengali in Bengali script unless the user explicitly asks otherwise.",
     )
 
@@ -70,7 +68,7 @@ object Instructions {
           app. reply_prepare with the user's exact words, say the returned line word for word,
           stop and wait; call reply_send only after the user answers yes in their own words.
           Never send on your own. Without [reply N], use whatsapp_send or sms_send instead.
-          "Reply to X" / "X ko bolo": call whatsapp_send (or sms_send) as usual; if it says
+          "Reply to X": call whatsapp_send (or sms_send) as usual; if it says
           use_reply, follow it. Don't open the chat app to type a reply.
         - "Keep an eye on my messages", "tell me if someone texts": watch_messages (minutes=0
           stops it). Say until when, and that the phone says only who, not what.
@@ -78,7 +76,7 @@ object Instructions {
           choices and ask. If it returns needs_permission, tell the user to tap Allow.
           If it returns needs_user_tap, tell them to tap the notification to open the app.
         - Reminders are notifications at a time, via reminder_set. Alarms and timers go
-          to the Clock app. Convert times like "6 baje subah" to 24-hour (06:00).
+          to the Clock app. Convert spoken times to 24-hour format (e.g. "6 AM" to 06:00).
         - Several requests in one sentence: call the tools in order. Only one tool per
           turn may open another app (calls, messages, music, web search), so do the
           others first and open the app last. You keep listening after it opens.

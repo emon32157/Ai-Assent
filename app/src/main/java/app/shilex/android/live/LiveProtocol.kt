@@ -17,7 +17,7 @@ object LiveProtocol {
         val model: String,
         val systemInstruction: String,
         val voice: String?,
-        val languages: List<String>,
+        val languages: List<String> = emptyList(),
         val resumeHandle: String?,
         /** Function declarations (name, description, parameters) the model may call. */
         val tools: JSONArray = JSONArray(),
@@ -34,14 +34,14 @@ object LiveProtocol {
                 ),
             )
         }
+        // Documented at https://ai.google.dev/gemini-api/docs/live-api/live-transcribe:
+        // inputAudioTranscription.languageCodes exists for the dedicated Live Transcription model (gemini-3.5-transcribe-live),
+        // and an empty list or omitted field means automatic language detection.
+        // It is NOT confirmed that the conversational Live model used by this app honours languageCodes, nor that bn-BD is in the supported list.
+        // TODO(verify): verify whether the conversational Live model supports languageCodes and whether bn-BD is supported.
+        // Stop sending specific language codes: always send inputAudioTranscription as an empty object (no languageCodes) so detection is automatic.
         val inputTranscription = JSONObject()
-        // Gemini Live API (BidiGenerateContent / Multimodal Live API) supports BCP-47 language codes
-        // in inputAudioTranscription.languageCodes (e.g. "en-IN", "hi-IN", "bn-BD").
-        // If omitted or empty, automatic language detection is used across supported locales.
-        // Doc checked: https://ai.google.dev/api/multimodal-live on 2026-11-08.
-        if (setup.languages.isNotEmpty()) {
-            inputTranscription.put("languageCodes", JSONArray(setup.languages))
-        }
+
         val resumption = JSONObject()
         if (!setup.resumeHandle.isNullOrBlank()) resumption.put("handle", setup.resumeHandle)
 

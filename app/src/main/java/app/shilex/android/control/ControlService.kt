@@ -45,7 +45,7 @@ class ControlService : AccessibilityService() {
     }
 
     class Snapshot(val packageName: String, val appLabel: String, val elements: List<ScreenElement>, val more: Boolean) {
-        val blocked get() = ControlRules.blocked(packageName)
+        val blocked get() = ControlRules.blocked(packageName, appLabel)
     }
 
     fun foregroundPackage(): String = rootInActiveWindow?.packageName?.toString().orEmpty()
@@ -57,7 +57,7 @@ class ControlService : AccessibilityService() {
         val label = runCatching {
             packageManager.getApplicationLabel(packageManager.getApplicationInfo(pkg, 0)).toString()
         }.getOrDefault(pkg)
-        if (ControlRules.blocked(pkg)) {
+        if (ControlRules.blocked(pkg, label)) {
             lastNodes = emptyMap()
             return Snapshot(pkg, label, emptyList(), false)
         }

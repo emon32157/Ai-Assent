@@ -251,7 +251,6 @@ class VoiceSession private constructor(private val app: Application) : LiveClien
                 if (settings.learning) Habits.get(app).summary(java.time.LocalTime.now().hour) else "",
             ),
             voice = settings.voice,
-            languages = settings.speechLanguages,
             resumeHandle = resumeHandle,
             tools = tools.declarations(),
         )

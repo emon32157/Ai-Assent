@@ -17,45 +17,45 @@ class LocalRouterTest {
         phrases.forEach { assertEquals(it, expected, LocalRouter.match(it)) }
 
     @Test
-    fun opensAppsInEnglishAndHinglish() {
-        check(OpenApp("youtube"), "Hey Jarvis, YouTube kholo.", "open YouTube", "YouTube open karo", "youtube khol do")
-        check(OpenApp("calendar"), "Calendar open karo", "open the calendar app")
-        check(OpenApp("google maps"), "Google Maps kholo")
-        check(OpenApp("camera"), "camera chalu karo", "launch camera")
+    fun opensAppsInEnglish() {
+        check(OpenApp("youtube"), "Hey Jarvis, open YouTube.", "open YouTube", "start youtube", "launch YouTube")
+        check(OpenApp("calendar"), "open Calendar", "open the calendar app", "start calendar")
+        check(OpenApp("google maps"), "open Google Maps")
+        check(OpenApp("camera"), "launch camera", "open camera")
     }
 
     @Test
     fun volume() {
-        check(SetVolume(30), "Volume 30 percent kar do.", "volume 30%", "set volume to 30")
-        check(SetVolume(100), "volume full kar do", "volume max")
-        check(StepVolume(true), "volume badhao", "volume up", "awaaz tez karo")
-        check(StepVolume(false), "volume kam karo", "lower the volume", "awaaz dheere karo")
-        check(Mute(true), "Phone mute karo.", "mute", "volume mute kar do", "silent mode")
-        check(Mute(false), "unmute", "phone unmute karo")
+        check(SetVolume(30), "set volume to 30", "volume 30%", "volume 30 percent")
+        check(SetVolume(100), "volume full", "volume max")
+        check(StepVolume(true), "volume up", "increase volume")
+        check(StepVolume(false), "volume down", "lower the volume", "decrease volume")
+        check(Mute(true), "mute", "silent mode")
+        check(Mute(false), "unmute", "phone unmute")
     }
 
     @Test
     fun mediaAndTorch() {
-        check(Media(MediaKey.Pause), "Music pause kar do.", "pause", "gaana band karo", "stop music")
-        check(Media(MediaKey.Play), "resume", "gaana chalao", "play music")
-        check(Media(MediaKey.Next), "next song", "agla gaana", "skip")
-        check(Media(MediaKey.Previous), "previous song", "pichla gaana")
-        check(Torch(true), "Flashlight on karo.", "torch jalao", "turn on the flashlight")
-        check(Torch(false), "torch band karo", "flashlight off")
+        check(Media(MediaKey.Pause), "pause", "music pause", "stop music")
+        check(Media(MediaKey.Play), "resume", "play music", "play song")
+        check(Media(MediaKey.Next), "next song", "next", "skip")
+        check(Media(MediaKey.Previous), "previous song", "previous track")
+        check(Torch(true), "flashlight on", "turn on the flashlight", "start torch")
+        check(Torch(false), "flashlight off", "torch off")
     }
 
     @Test
     fun clockAndStatus() {
-        check(LocalCommand.Time, "what's the time", "kitne baje hai", "time kya hua")
-        check(LocalCommand.Date, "aaj ki date kya hai", "what day is it today")
-        check(LocalCommand.Battery, "kitni battery hai", "battery level", "is my phone charging")
-        check(Timer(300), "5 minute ka timer laga do", "set a timer for 5 minutes")
+        check(LocalCommand.Time, "what's the time", "time")
+        check(LocalCommand.Date, "what day is it today", "date", "which day is today")
+        check(LocalCommand.Battery, "battery level", "is my phone charging", "battery")
+        check(Timer(300), "set a timer for 5 minutes", "timer 5 minutes")
         check(Timer(5_400), "timer for 1 hour 30 minutes")
-        check(Alarm(6, 30, Period.Am), "alarm at 6:30 a.m.", "subah 6:30 ka alarm")
-        check(Alarm(7, 0, Period.Pm), "shaam 7 baje ka alarm")
-        check(Alarm(6, 0, null), "6 baje ka alarm laga do")
+        check(Alarm(6, 30, Period.Am), "alarm at 6:30 a.m.", "alarm at 6:30 am")
+        check(Alarm(7, 0, Period.Pm), "alarm at 7 pm")
+        check(Alarm(6, 0, null), "alarm at 6")
         check(Alarm(18, 15, null), "alarm for 18:15")
-        check(LocalCommand.Stop, "stop", "bas", "ruk jao", "never mind")
+        check(LocalCommand.Stop, "stop", "cancel", "never mind", "go to sleep", "standby")
     }
 
     @Test
@@ -73,19 +73,23 @@ class LocalRouterTest {
     }
 
     @Test
+    fun bengaliSpeechHandsOffToGemini() {
+        assertNull(LocalRouter.match("ইউটিউব খোলো"))
+        assertNull(LocalRouter.match("গান থামাও"))
+    }
+
+    @Test
     fun understandsTheOfflineRecognisersSpelling() {
-        // What Vosk's Indian-English model wrote for Hinglish phrases (Mac test, 2026-11-03).
-        check(OpenApp("youtube"), "youtube call or", "youtube collar")
-        check(OpenApp("calendar"), "calendar open car or")
         check(OpenApp("whatsapp"), "the open what's up")
-        check(Torch(true), "flashlight on car or")
-        check(Torch(false), "flashlight of cairo") // phone test, Indian English voice
-        check(Media(MediaKey.Pause), "music pause car do")
-        check(SetVolume(30), "volume thirty percent car do")
+        check(OpenApp("youtube"), "open you tube")
+        check(Torch(true), "flashlight on")
+        check(Torch(false), "flashlight off")
+        check(Media(MediaKey.Pause), "music pause")
+        check(SetVolume(30), "volume thirty percent")
         check(SetVolume(45), "set the volume to forty five percent")
         check(Timer(300), "set a timer for five minutes")
         check(Alarm(6, 30, Period.Am), "set an alarm for six thirty am")
-        check(LocalCommand.Battery, "kidney battery higher")
+        check(LocalCommand.Battery, "battery level")
         check(LocalCommand.Time, "what time is it")
     }
 
@@ -98,6 +102,6 @@ class LocalRouterTest {
 
     @Test
     fun triesEveryAlternative() {
-        assertEquals(OpenApp("youtube"), LocalRouter.match(listOf("you tube call", "youtube kholo")))
+        assertEquals(OpenApp("youtube"), LocalRouter.match(listOf("not matching", "open youtube")))
     }
 }

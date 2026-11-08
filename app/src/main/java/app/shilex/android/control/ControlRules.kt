@@ -2,7 +2,7 @@ package app.shilex.android.control
 
 /**
  * Pure safety rules for phone control, unit-tested without a phone. The same label
- * categories as desktop (tools/builtin/ui_targets.py), plus Hindi words and calls.
+ * categories as desktop (tools/builtin/ui_targets.py), plus Hindi safety words and calls.
  */
 object ControlRules {
     /** Apps JARVIS never reads or touches: money, passwords, its own screens, app installs. */
@@ -17,37 +17,66 @@ object ControlRules {
         "com.x8bit.bitwarden", "com.onepassword.android", "com.lastpass.lpandroid",
         "com.google.android.apps.authenticator2", "com.azure.authenticator",
         // Bangladeshi MFS and banking apps
-        "com.bKash.customerapp", // Verified: bKash (https://play.google.com/store/apps/details?id=com.bKash.customerapp)
-        "com.konasl.nagad", // Verified: Nagad (https://play.google.com/store/apps/details?id=com.konasl.nagad)
-        "com.dbbl.mbs.apps.main", // Verified: DBBL Rocket (https://play.google.com/store/apps/details?id=com.dbbl.mbs.apps.main)
-        // TODO(verify): com.dbbl.mbs.apps.rocket is a legacy or secondary id; official Play Store id for Rocket is com.dbbl.mbs.apps.main
+        // CONFIRMED: https://play.google.com/store/apps/details?id=com.bKash.customerapp (bKash)
+        "com.bKash.customerapp",
+        // CONFIRMED: https://play.google.com/store/apps/details?id=com.konasl.nagad (Nagad)
+        "com.konasl.nagad",
+        // CONFIRMED: https://play.google.com/store/apps/details?id=com.dbbl.mbs.apps.main (DBBL Rocket)
+        "com.dbbl.mbs.apps.main",
+        // TODO(verify): com.dbbl.mbs.apps.rocket is unconfirmed on Google Play (official listing is com.dbbl.mbs.apps.main); retained as legacy/secondary ID for safety
         "com.dbbl.mbs.apps.rocket",
-        "bd.com.upay.customer", // Verified: Upay (https://play.google.com/store/apps/details?id=bd.com.upay.customer)
-        "com.ibbl.cellfin", // Verified: CellFin (https://play.google.com/store/apps/details?id=com.ibbl.cellfin)
-        "co.bracbank.astha", // Verified: BRAC Bank Astha (https://play.google.com/store/apps/details?id=co.bracbank.astha)
-        "com.thecitybank.citytouch", // Verified: City Bank Citytouch (https://play.google.com/store/apps/details?id=com.thecitybank.citytouch)
-        "com.dbbl.nexus.pay", // Verified: NexusPay (https://play.google.com/store/apps/details?id=com.dbbl.nexus.pay)
-        "com.sonalibank.esheba", // Verified: Sonali eSheba (https://play.google.com/store/apps/details?id=com.sonalibank.esheba)
-        "com.ebl.skybanking", // Verified: EBL SKYBANKING (https://play.google.com/store/apps/details?id=com.ebl.skybanking)
-        "bd.com.bankasia.smartapp", // Verified: Bank Asia Smart App (https://play.google.com/store/apps/details?id=bd.com.bankasia.smartapp)
+        // CONFIRMED: https://play.google.com/store/apps/details?id=bd.com.upay.customer (upay)
+        "bd.com.upay.customer",
+        // CONFIRMED: https://play.google.com/store/apps/details?id=bd.com.upay.agent (upay Agent)
+        "bd.com.upay.agent",
+        // CONFIRMED: https://play.google.com/store/apps/details?id=com.ibbl.cellfin (CellFin)
+        "com.ibbl.cellfin",
+        // CONFIRMED: https://play.google.com/store/apps/details?id=com.bracbank.astha (BRAC Bank Astha)
+        "com.bracbank.astha",
+        // TODO(verify): co.bracbank.astha returns 404 on Google Play (real confirmed ID is com.bracbank.astha); retained for safety
+        "co.bracbank.astha",
+        // CONFIRMED: https://play.google.com/store/apps/details?id=com.thecitybank.citytouch (Citytouch)
+        "com.thecitybank.citytouch",
+        // CONFIRMED: https://play.google.com/store/apps/details?id=com.dbbl.nexus.pay (NexusPay)
+        "com.dbbl.nexus.pay",
+        // CONFIRMED: https://play.google.com/store/apps/details?id=bd.com.sonalibank.ss (Sonali eSheba)
+        "bd.com.sonalibank.ss",
+        // CONFIRMED: https://play.google.com/store/apps/details?id=bd.com.sonalibank.sw (Sonali e-Wallet)
+        "bd.com.sonalibank.sw",
+        // TODO(verify): com.sonalibank.esheba returns 404 on Google Play (official confirmed listing is bd.com.sonalibank.ss); retained for safety
+        "com.sonalibank.esheba",
+        // CONFIRMED: https://play.google.com/store/apps/details?id=com.ebl.skybanking (EBL SKYBANKING)
+        "com.ebl.skybanking",
+        // CONFIRMED: https://play.google.com/store/apps/details?id=eraapps.bankasia.bdinternetbanking.apps (Bank Asia Zen)
+        "eraapps.bankasia.bdinternetbanking.apps",
+        // TODO(verify): bd.com.bankasia.smartapp returns 404 on Google Play (active confirmed ID is eraapps.bankasia.bdinternetbanking.apps); retained for safety
+        "bd.com.bankasia.smartapp",
     )
-    private val BLOCKED_WORDS = Regex("bank|upi|wallet|password|authenticator|vault|bkash|nagad|rocket|upay|mfs", RegexOption.IGNORE_CASE)
+    private val BLOCKED_WORDS = Regex(
+        "bank|upi|wallet|password|authenticator|vault|bkash|nagad|rocket|upay|mfs|cellfin|astha|citytouch|nexuspay|esheba|skybanking|বিকাশ|নগদ|রকেট|উপায়|উপায়|ব্যাংক",
+        RegexOption.IGNORE_CASE,
+    )
 
-    fun blocked(packageName: String): Boolean =
-        packageName in BLOCKED_PACKAGES || BLOCKED_WORDS.containsMatchIn(packageName)
+    fun blocked(packageName: String, appLabel: String = ""): Boolean =
+        packageName in BLOCKED_PACKAGES ||
+            BLOCKED_WORDS.containsMatchIn(packageName) ||
+            (appLabel.isNotEmpty() && BLOCKED_WORDS.containsMatchIn(appLabel))
 
     enum class Risk { Safe, Outgoing, Destructive, Money }
 
+    // Hindi / Romanized-Hindi words stay on purpose as a safety deny-list for user approval.
     private val MONEY = Regex(
         """\b(buy|purchase|pay|payment|checkout|place order|order now|transfer|donate|subscribe)\b|भुगतान|खरीद|টাকা পাঠান|পেমেন্ট|পরিশোধ|প্রদান|কিনুন|ক্রয়|কেনাকাটা|চেকআউট|ট্রান্সফার|স্থানান্তর|দান|সাবস্ক্রাইব""",
         RegexOption.IGNORE_CASE,
     )
+    // Hindi / Romanized-Hindi words stay on purpose as a safety deny-list for user approval.
     private val DESTRUCTIVE = Regex(
         """\b(delete|remove|trash|erase|discard|uninstall|format|reset|clear all|empty|sign out|log ?out|block|report)\b|हटा|डिलीट|मिटा|মুছুন|মুছে ফেলুন|ডিলিট|অপসারণ|বাতিল করুন|লগআউট|লগ আউট|সাইন আউট|ব্লক|আনইনস্টল""",
         RegexOption.IGNORE_CASE,
     )
+    // Hindi / Romanized-Hindi words stay on purpose as a safety deny-list for user approval.
     private val OUTGOING = Regex(
-        """\b(send|submit|post|publish|share|reply|forward|upload|confirm|accept|agree|allow|invite|schedule|book|call|dial|install|bhejo|bhejein)\b|भेज|पोस्ट|कॉल|পাঠান|পাঠাও|সেন্ড|কল|কল করুন|ডায়াল|জমা দিন|সাবমিট|নিশ্চিত করুন|কনফার্ম|অনুমোদন|অনুমতি দিন|পোস্ট|শেয়ার|উত্তর দিন""",
+        """\b(send|submit|post|publish|share|reply|forward|upload|confirm|accept|agree|allow|invite|schedule|book|call|dial|install|bhejo|bhejein)\b|भेज|পোস্ট|कॉल|পাঠান|পাঠাও|সেন্ড|কল|কল করুন|ডায়াল|জমা দিন|সাবমিট|নিশ্চিত করুন|কনফার্ম|অনুমোদন|অনুমতি দিন|পোস্ট|শেয়ার|উত্তর দিন""",
         RegexOption.IGNORE_CASE,
     )
 

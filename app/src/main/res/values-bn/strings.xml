@@ -61,7 +61,7 @@
     <string name="status_hint_local_doing">এই ফোনেই করা হচ্ছে।</string>
     <string name="status_hint_local_speaking">ফোনেই উত্তর দেওয়া হয়েছে।</string>
     <string name="status_hint_connecting">জেমিনির সাথে যুক্ত হচ্ছে…</string>
-    <string name="status_hint_gemini_listening">যেকোনো সময় কথা বলুন, ইংরেজি, হিন্দি, বাংলা বা বাংলিশে।</string>
+    <string name="status_hint_gemini_listening">যেকোনো সময় কথা বলুন, ইংরেজি বা বাংলায়।</string>
     <string name="status_hint_speaking">কথা থামাতে গোলকে ট্যাপ করুন।</string>
     <string name="status_hint_standby_wake">\"%s\" বলুন, অথবা মাইকে ট্যাপ করুন।</string>
     <string name="status_hint_standby_tap">কথা বলতে মাইকে ট্যাপ করুন।</string>
@@ -93,7 +93,7 @@
 
     <!-- Automations Screen -->
     <string name="automations_title">অটোমেশন</string>
-    <string name="automations_subtitle">\"%s\" বলুন, তারপর নির্দেশ দিন। ইংরেজি, হিন্দি, বাংলা ও বাংলিশ।</string>
+    <string name="automations_subtitle">\"%s\" বলুন, তারপর নির্দেশ দিন। ইংরেজি ও বাংলা।</string>
     <string name="routines_title">রুটিন</string>
     <string name="routines_description">রুটিন চালাতে তার নাম বলুন। মুখে বলুন: \"গুড নাইট নামে একটি রুটিন বানাও: সকাল ৬:৩০ এ অ্যালার্ম, কাল কী আছে বলো\"।</string>
     <string name="group_on_phone_title">এই ফোনে</string>
@@ -231,7 +231,7 @@
     <string name="settings_version">সংস্করণ %s</string>
 
     <!-- Onboarding -->
-    <string name="onboarding_welcome_desc">আপনার ফোনের জন্য একটি ভয়েস সহকারী, ইংরেজি, হিন্দি, বাংলা ও বাংলিশে।</string>
+    <string name="onboarding_welcome_desc">আপনার ফোনের জন্য একটি ভয়েস সহকারী, ইংরেজি ও বাংলায়।</string>
     <string name="onboarding_get_started">শুরু করুন</string>
     <string name="onboarding_key_title">আপনার জেমিনি কি</string>
     <string name="onboarding_key_desc">%s আপনার নিজস্ব কি দিয়ে গুগল জেমিনি ব্যবহার করে এমন কাজের জন্য যা ফোন নিজে করতে পারে না।</string>

@@ -11,7 +11,7 @@ class VoiceConsentTest {
 
     @Test
     fun clearYesSends() {
-        listOf("haan", "Yes", "haan bhej do", "ok send it", "theek hai", "हाँ भेजो", "yes send to mom",
+        listOf("Yes", "ok send it", "yes send to mom",
             "হ্যাঁ", "হ্যা", "জি", "হুম পাঠাও", "ঠিক আছে", "দাও", "হ্যাঁ পাঠিয়ে দাও")
             .forEach { assertTrue(it, VoiceConsent.confirms(it, message, readBack)) }
     }
@@ -19,7 +19,7 @@ class VoiceConsentTest {
     @Test
     fun callConsentYesRecognised() {
         val callReadBack = "Call Rahul on 01711 234 567?"
-        listOf("yes", "call him", "haan call karo", "হ্যাঁ", "জি", "কল করো", "হ্যাঁ দাও", "call")
+        listOf("yes", "call him", "হ্যাঁ", "জি", "কল করো", "হ্যাঁ দাও", "call")
             .forEach { assertTrue(it, VoiceConsent.confirms(it, "", callReadBack)) }
     }
 
@@ -52,6 +52,41 @@ class VoiceConsentTest {
             "yes but actually let me think about it first okay",
             "না", "নাহ", "না পাঠিও না", "বাতিল", "থামো", "করো না",
         ).forEach { assertFalse(it, VoiceConsent.confirms(it, message, readBack)) }
+    }
+
+    @Test
+    fun hindiYesNoLongerConsentsButHindiNoStillBlocks() {
+        // Hindi YES words are no longer recognised as consent (task 4e)
+        listOf("haan", "haan bhej do", "theek hai", "हाँ", "हाँ भेजो").forEach {
+            assertFalse(it, VoiceConsent.confirms(it, message, readBack))
+        }
+        // Hindi NO words still block as safety deny-list
+        listOf("nahi", "nahin", "nahi ruko", "mat bhejo", "नहीं", "रुको").forEach {
+            assertFalse(it, VoiceConsent.confirms(it, message, readBack))
+        }
+    }
+
+    @Test
+    fun noMixedScriptTokensInConsentRegexes() {
+        val bengaliRange = '\u0980'..'\u09FF'
+        val devanagariLettersAndMarks = '\u0900'..'\u097F'
+
+        fun checkPattern(patternName: String, regex: Regex) {
+            val match = Regex("""\((.+)\)""").find(regex.pattern)
+            val inner = match?.groupValues?.get(1) ?: regex.pattern
+            val tokens = inner.split("|")
+            for (token in tokens) {
+                val hasBengali = token.any { it in bengaliRange }
+                val hasDevanagari = token.any { it in devanagariLettersAndMarks }
+                assertFalse(
+                    "Token '$token' in $patternName contains both Bengali and Devanagari characters",
+                    hasBengali && hasDevanagari,
+                )
+            }
+        }
+
+        checkPattern("YES", VoiceConsent.YES)
+        checkPattern("NO", VoiceConsent.NO)
     }
 
     @Test

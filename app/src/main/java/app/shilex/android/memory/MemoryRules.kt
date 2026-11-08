@@ -12,6 +12,7 @@ data class Routine(val name: String, val steps: List<String>)
  * refused, because notes are sent to Gemini when recalled.
  */
 object MemoryRules {
+    // Secret and security terms stay on purpose as a safety deny-list against secret leakage.
     private val SECRET_WORDS = Regex(
         """\b(password|passcode|pass word|pin|otp|cvv|upi pin|atm pin|secret|private key|seed phrase|login code)\b|পাসওয়ার্ড|পাসওয়ার্ড|পাসকোড|পিন|ওটিপি|ও টি পি|সিভিভি|সি ভি ভি|গোপন কোড|গোপন পিন|গোপন নম্বর|গোপনীয়|গোপনীয়তা""",
         RegexOption.IGNORE_CASE,

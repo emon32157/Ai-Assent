@@ -4,9 +4,11 @@ import android.content.Context
 import android.content.SharedPreferences
 
 /** Plain preferences (no secrets). Defaults match the desktop app. */
-class Settings(context: Context) {
-    private val prefs = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
-
+class Settings(
+    context: Context? = null,
+    private val prefs: SharedPreferences = context?.getSharedPreferences("settings", Context.MODE_PRIVATE)
+        ?: error("Preferences required when context is not provided"),
+) {
     var model: String
         get() = prefs.getString("model", DEFAULT_MODEL) ?: DEFAULT_MODEL
         set(value) = prefs.edit().putString("model", value).apply()
@@ -15,9 +17,12 @@ class Settings(context: Context) {
         get() = prefs.getString("voice", "Puck") ?: "Puck"
         set(value) = prefs.edit().putString("voice", value).apply()
 
-    /** "auto", "english", "hindi", "hinglish" or "bengali", as on desktop. */
+    /** "auto", "english", or "bengali". "hindi" and "hinglish" migrate to "auto". */
     var replyLanguage: String
-        get() = prefs.getString("reply_language", "auto") ?: "auto"
+        get() {
+            val stored = prefs.getString("reply_language", "auto") ?: "auto"
+            return if (stored == "hindi" || stored == "hinglish") "auto" else stored
+        }
         set(value) = prefs.edit().putString("reply_language", value).apply()
 
     /** Mute the mic while the assistant speaks, unless headphones are in use. */
@@ -90,12 +95,10 @@ class Settings(context: Context) {
     fun unwatch(listener: SharedPreferences.OnSharedPreferenceChangeListener) =
         prefs.unregisterOnSharedPreferenceChangeListener(listener)
 
-    val speechLanguages: List<String> = listOf("en-IN", "hi-IN", "bn-BD")
-
     companion object {
         const val DEFAULT_MODEL = "gemini-3.1-flash-live-preview"
         const val SIGHT_AIM_MODEL = "gemini-2.5-flash"
-        val REPLY_LANGUAGES = listOf("auto", "english", "hindi", "hinglish", "bengali")
+        val REPLY_LANGUAGES = listOf("auto", "english", "bengali")
         val AVAILABLE_MODELS = listOf("gemini-3.1-flash-live-preview", "gemini-2.5-flash", "gemini-2.0-flash-exp")
     }
 }

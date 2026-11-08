@@ -13,7 +13,7 @@ class LiveProtocolTest {
         model = "gemini-3.1-flash-live-preview",
         systemInstruction = "Be brief.",
         voice = "Puck",
-        languages = listOf("en-IN", "hi-IN"),
+        languages = listOf("en-IN", "bn-BD"),
         resumeHandle = null,
     )
 
@@ -29,7 +29,9 @@ class LiveProtocolTest {
                 .getJSONObject("prebuiltVoiceConfig").getString("voiceName"),
         )
         assertEquals("Be brief.", body.getJSONObject("systemInstruction").getJSONArray("parts").getJSONObject(0).getString("text"))
-        assertEquals(2, body.getJSONObject("inputAudioTranscription").getJSONArray("languageCodes").length())
+        // inputAudioTranscription is always sent as an empty object (no languageCodes) for automatic detection
+        assertFalse(body.getJSONObject("inputAudioTranscription").has("languageCodes"))
+        assertEquals(0, body.getJSONObject("inputAudioTranscription").length())
         assertTrue(body.has("outputAudioTranscription"))
         assertFalse(body.getJSONObject("sessionResumption").has("handle"))
         val detection = body.getJSONObject("realtimeInputConfig").getJSONObject("automaticActivityDetection")
@@ -37,16 +39,16 @@ class LiveProtocolTest {
     }
 
     @Test
-    fun setupSupportsBengaliAndAutoDetection() {
-        val bengaliSetup = setup.copy(languages = listOf("en-IN", "hi-IN", "bn-BD"))
+    fun setupNeverSendsLanguageCodesRegardlessOfLanguageSetting() {
+        val bengaliSetup = setup.copy(languages = listOf("en-IN", "bn-BD"))
         val bengaliBody = JSONObject(LiveProtocol.setupMessage(bengaliSetup)).getJSONObject("setup")
-        val codes = bengaliBody.getJSONObject("inputAudioTranscription").getJSONArray("languageCodes")
-        assertEquals(3, codes.length())
-        assertEquals("bn-BD", codes.getString(2))
+        assertFalse(bengaliBody.getJSONObject("inputAudioTranscription").has("languageCodes"))
+        assertEquals(0, bengaliBody.getJSONObject("inputAudioTranscription").length())
 
         val emptySetup = setup.copy(languages = emptyList())
         val emptyBody = JSONObject(LiveProtocol.setupMessage(emptySetup)).getJSONObject("setup")
         assertFalse(emptyBody.getJSONObject("inputAudioTranscription").has("languageCodes"))
+        assertEquals(0, emptyBody.getJSONObject("inputAudioTranscription").length())
     }
 
     @Test
@@ -68,14 +70,14 @@ class LiveProtocolTest {
         val data = Base64.getEncoder().encodeToString(byteArrayOf(9, 9))
         val message = """
             {"serverContent": {
-              "inputTranscription": {"text": "namaste"},
+              "inputTranscription": {"text": "hello"},
               "modelTurn": {"parts": [{"inlineData": {"mimeType": "audio/pcm;rate=24000", "data": "$data"}}]},
               "outputTranscription": {"text": "Hello!"},
               "turnComplete": true
             }}
         """.trimIndent()
         val events = LiveProtocol.parse(message)
-        assertEquals(LiveEvent.UserText("namaste"), events[0])
+        assertEquals(LiveEvent.UserText("hello"), events[0])
         val audio = events[1] as LiveEvent.Audio
         assertEquals(24000, audio.sampleRate)
         assertArrayEquals(byteArrayOf(9, 9), audio.pcm)

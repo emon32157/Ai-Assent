@@ -10,15 +10,85 @@ class ControlRulesTest {
     @Test
     fun moneyPasswordsAndItselfAreBlocked() {
         listOf(
-            "com.phonepe.app", "net.one97.paytm", "com.google.android.apps.nbu.paisa.user",
-            "com.x8bit.bitwarden", "com.example.mybank", "app.shilex.android", "com.android.settings",
+            "app.shilex.android", "com.android.settings", "com.android.vending",
+            "com.google.android.apps.nbu.paisa.user", "net.one97.paytm", "com.phonepe.app",
+            "in.org.npci.upiapp", "in.amazon.mShop.android.shopping.pay", "com.mobikwik_new",
+            "com.sbi.lotusintouch", "com.sbi.SBIFreedomPlus", "com.csam.icici.bank.imobile",
+            "com.snapwork.hdfc", "com.axis.mobile", "com.msf.kbank.mobile", "com.bankofbaroda.mconnect",
+            "com.x8bit.bitwarden", "com.onepassword.android", "com.lastpass.lpandroid",
+            "com.google.android.apps.authenticator2", "com.azure.authenticator",
             // Bangladeshi MFS and Banks
             "com.bKash.customerapp", "com.konasl.nagad", "com.dbbl.mbs.apps.main", "com.dbbl.mbs.apps.rocket",
-            "bd.com.upay.customer", "com.ibbl.cellfin", "co.bracbank.astha", "com.thecitybank.citytouch",
-            "com.dbbl.nexus.pay", "com.sonalibank.esheba", "com.ebl.skybanking", "bd.com.bankasia.smartapp",
+            "bd.com.upay.customer", "bd.com.upay.agent", "com.ibbl.cellfin", "com.bracbank.astha",
+            "co.bracbank.astha", "com.thecitybank.citytouch", "com.dbbl.nexus.pay", "bd.com.sonalibank.ss",
+            "bd.com.sonalibank.sw", "com.sonalibank.esheba", "com.ebl.skybanking",
+            "eraapps.bankasia.bdinternetbanking.apps", "bd.com.bankasia.smartapp",
         ).forEach { assertTrue(it, ControlRules.blocked(it)) }
-        listOf("com.whatsapp", "com.google.android.apps.youtube.music", "com.instagram.android")
+        listOf("com.whatsapp", "com.google.android.apps.youtube.music", "com.instagram.android", "com.android.chrome")
             .forEach { assertFalse(it, ControlRules.blocked(it)) }
+    }
+
+    @Test
+    fun newBankAsiaIdIsBlocked() {
+        assertTrue(ControlRules.blocked("eraapps.bankasia.bdinternetbanking.apps"))
+    }
+
+    @Test
+    fun blockedLabelsAreBlockedEvenWithUnknownPackageId() {
+        val unknownPkg = "com.example.unknown.app"
+        val labels = listOf(
+            "bank", "bkash", "nagad", "rocket", "upay", "mfs", "wallet",
+            "cellfin", "astha", "citytouch", "nexuspay", "esheba", "skybanking",
+            "বিকাশ", "নগদ", "রকেট", "উপায়", "ব্যাংক"
+        )
+        labels.forEach { label ->
+            assertTrue(
+                "Label '$label' should be blocked",
+                ControlRules.blocked(packageName = unknownPkg, appLabel = label)
+            )
+        }
+    }
+
+    @Test
+    fun normalAppIsNotBlocked() {
+        assertFalse(ControlRules.blocked(packageName = "com.android.chrome", appLabel = "Chrome"))
+        assertFalse(ControlRules.blocked(packageName = "com.google.android.apps.maps", appLabel = "Google Maps"))
+    }
+
+    @Test
+    fun noDuplicateIdsInBlockedPackagesAndNoVerifiedComments() {
+        val rulesFile = java.io.File("src/main/java/app/shilex/android/control/ControlRules.kt")
+            .takeIf { it.exists() }
+            ?: java.io.File("app/src/main/java/app/shilex/android/control/ControlRules.kt")
+        assertTrue("ControlRules.kt must exist", rulesFile.exists())
+        val lines = rulesFile.readLines()
+
+        // 1. Verify no comment contains "Verified"
+        val verifiedComments = lines.filter { line ->
+            val trimmed = line.trim()
+            trimmed.startsWith("//") && trimmed.contains("Verified", ignoreCase = false)
+        }
+        assertTrue(
+            "ControlRules.kt must not contain 'Verified' in comments: $verifiedComments",
+            verifiedComments.isEmpty()
+        )
+
+        // 2. Verify no duplicate IDs appear in BLOCKED_PACKAGES
+        val idRegex = Regex("""^\s*"([a-zA-Z0-9_\.]+)",?\s*(?://.*)?$""")
+        val inBlockedPackages = mutableListOf<String>()
+        var inList = false
+        for (line in lines) {
+            if ("BLOCKED_PACKAGES" in line) inList = true
+            if (inList) {
+                val match = idRegex.find(line)
+                if (match != null) {
+                    inBlockedPackages.add(match.groupValues[1])
+                }
+                if (line.trim() == ")") inList = false
+            }
+        }
+        val duplicates = inBlockedPackages.groupBy { it }.filter { it.value.size > 1 }.keys
+        assertTrue("BLOCKED_PACKAGES must not contain duplicate IDs: $duplicates", duplicates.isEmpty())
     }
 
     @Test
