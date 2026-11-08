@@ -90,6 +90,11 @@ class VoiceService : Service() {
             return
         }
         wake.stop()
+        if (!foreground) {
+            // Android 14+ throws ForegroundServiceDidNotStartInTimeException if startForeground
+            // was never called before stopping. Ensure foreground is established before stopSelf.
+            show(wakeNotification())
+        }
         stopSelf()
     }
 
@@ -114,28 +119,28 @@ class VoiceService : Service() {
     }
 
     private fun sessionNotification() = builder(CHANNEL)
-        .setContentTitle("${Branding.ASSISTANT_NAME} is listening")
-        .setContentText("Talk any time. It stops after 3 quiet minutes.")
-        .addAction(0, "Stop", action(ACTION_STOP, 1))
+        .setContentTitle(getString(R.string.notif_listening_title, Branding.ASSISTANT_NAME))
+        .setContentText(getString(R.string.notif_listening_text))
+        .addAction(0, getString(R.string.notif_listening_stop), action(ACTION_STOP, 1))
         .build()
 
     // Standby: Android requires a notification while the mic is on; this one stays silent,
     // folded at the bottom of the shade and out of the status bar.
     private fun wakeNotification() = builder(STANDBY_CHANNEL)
-        .setContentTitle("Say \"${WakeWordModel.PHRASE}\" to talk")
-        .setContentText("Heard on this phone only; nothing is sent until you say it.")
-        .addAction(0, "Turn off", action(ACTION_WAKE_OFF, 2))
+        .setContentTitle(getString(R.string.notif_wake_title, WakeWordModel.PHRASE))
+        .setContentText(getString(R.string.notif_wake_text))
+        .addAction(0, getString(R.string.notif_wake_turn_off), action(ACTION_WAKE_OFF, 2))
         .build()
 
     private fun builder(channel: String): NotificationCompat.Builder {
         val manager = getSystemService(NotificationManager::class.java)
         manager.createNotificationChannel(
-            NotificationChannel(CHANNEL, "Listening", NotificationManager.IMPORTANCE_LOW).apply {
-                description = "Shown while ${Branding.ASSISTANT_NAME} can hear you."
+            NotificationChannel(CHANNEL, getString(R.string.notif_channel_listening), NotificationManager.IMPORTANCE_LOW).apply {
+                description = getString(R.string.notif_channel_listening_desc, Branding.ASSISTANT_NAME)
             },
         )
         manager.createNotificationChannel(
-            NotificationChannel(STANDBY_CHANNEL, "Waiting for the wake word", NotificationManager.IMPORTANCE_MIN).apply {
+            NotificationChannel(STANDBY_CHANNEL, getString(R.string.notif_channel_standby), NotificationManager.IMPORTANCE_MIN).apply {
                 description = "Required by Android while the wake word is on. Silent and minimized."
             },
         )

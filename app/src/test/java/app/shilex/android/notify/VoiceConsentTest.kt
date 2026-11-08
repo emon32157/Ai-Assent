@@ -11,8 +11,38 @@ class VoiceConsentTest {
 
     @Test
     fun clearYesSends() {
-        listOf("haan", "Yes", "haan bhej do", "ok send it", "theek hai", "हाँ भेजो", "yes send to mom")
+        listOf("haan", "Yes", "haan bhej do", "ok send it", "theek hai", "हाँ भेजो", "yes send to mom",
+            "হ্যাঁ", "হ্যা", "জি", "হুম পাঠাও", "ঠিক আছে", "দাও", "হ্যাঁ পাঠিয়ে দাও")
             .forEach { assertTrue(it, VoiceConsent.confirms(it, message, readBack)) }
+    }
+
+    @Test
+    fun callConsentYesRecognised() {
+        val callReadBack = "Call Rahul on 01711 234 567?"
+        listOf("yes", "call him", "haan call karo", "হ্যাঁ", "জি", "কল করো", "হ্যাঁ দাও", "call")
+            .forEach { assertTrue(it, VoiceConsent.confirms(it, "", callReadBack)) }
+    }
+
+    @Test
+    fun kolkataAloneIsNotYes() {
+        // "কলকাতা" contains "কল", but is not the word "কল"
+        assertFalse(VoiceConsent.confirms("কলকাতা", "", "Call Rahul on 01711 234 567?"))
+        assertFalse(VoiceConsent.confirms("কলকাতা যাব", "", "Call Rahul on 01711 234 567?"))
+    }
+
+    @Test
+    fun thikAcheIsYesAndThikAcheNaIsNo() {
+        assertTrue(VoiceConsent.confirms("ঠিক আছে", "", "Call Rahul on 01711 234 567?"))
+        assertFalse(VoiceConsent.confirms("ঠিক আছে না", "", "Call Rahul on 01711 234 567?"))
+        assertFalse(VoiceConsent.confirms("না ঠিক আছে", "", "Call Rahul on 01711 234 567?"))
+    }
+
+    @Test
+    fun echoOfBengaliReadBackIsNotConsent() {
+        val bengaliReadBack = "Call রহিম on 01711 234 567?"
+        // Echo repeating contact name and number digits
+        assertFalse(VoiceConsent.confirms("রহিম 01711", "", bengaliReadBack))
+        assertFalse(VoiceConsent.confirms("রহিম 234 567", "", bengaliReadBack))
     }
 
     @Test
@@ -20,6 +50,7 @@ class VoiceConsentTest {
         listOf(
             "", "nahi", "no wait", "haan nahi ruko", "change it to 20 minute", "mat bhejo", "hmm", "who is this",
             "yes but actually let me think about it first okay",
+            "না", "নাহ", "না পাঠিও না", "বাতিল", "থামো", "করো না",
         ).forEach { assertFalse(it, VoiceConsent.confirms(it, message, readBack)) }
     }
 

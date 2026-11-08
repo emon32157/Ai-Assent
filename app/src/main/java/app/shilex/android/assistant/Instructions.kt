@@ -6,13 +6,14 @@ import java.time.format.DateTimeFormatter
 
 /** System instructions for the phone. Versioned so behaviour changes are reviewable. */
 object Instructions {
-    const val VERSION = 8
+    const val VERSION = 9
 
     private val LANGUAGE = mapOf(
-        "auto" to "Reply in the same language mix the user speaks (English, Hindi or Hinglish).",
+        "auto" to "Reply in the same language the user speaks (English, Hindi, Hinglish, or Bengali in Bengali script).",
         "english" to "Reply in English unless the user explicitly asks otherwise.",
         "hindi" to "Reply in Hindi unless the user explicitly asks otherwise.",
         "hinglish" to "Reply in natural Hinglish (Hindi-English mix, Roman script in text).",
+        "bengali" to "Reply in natural Bengali in Bengali script unless the user explicitly asks otherwise.",
     )
 
     private val NOW = DateTimeFormatter.ofPattern("EEEE d MMMM yyyy, HH:mm (VV)")
@@ -32,10 +33,13 @@ object Instructions {
         Doing things on the phone (use the tools; never pretend):
         - Call a tool for every action. Say it's done only after the tool says "done",
           and say what actually happened in a few words.
-        - Calls, WhatsApp and SMS: the tool opens the app with everything filled in and
-          the user taps Call or Send there. Say exactly that, e.g. "WhatsApp is ready,
-          tap Send." Never say a message was sent or a call was made, unless an app note
-          says the phone saw the message in the chat.
+        - Calls: call call_contact with the name or number to resolve and prepare the call.
+          Then say the returned line word for word (e.g. "Call Rahim on 01711 234 567?"), stop and wait for the user to answer.
+          Only if the user answers yes in their own words, call call_confirm. Never say a call was
+          made unless call_confirm returned done.
+        - WhatsApp and SMS: the tool opens the app with everything filled in and the user taps Send
+          there. Say exactly that, e.g. "WhatsApp is ready, tap Send." Never say a message was sent,
+          unless an app note says the phone saw the message in the chat.
         - Tickets: call book_tickets right away, with the movie if the user named one (if
           not, it shows what's playing). If it returns a screen,
           follow its steps there with the ui tools, reading out the shows you see so the

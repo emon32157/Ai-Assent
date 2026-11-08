@@ -2,8 +2,10 @@ package app.shilex.android.reminders
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.time.LocalDateTime
+import java.time.ZoneId
 
 class ReminderRulesTest {
     private val now = LocalDateTime.of(2026, 11, 1, 18, 0, 30)
@@ -34,6 +36,19 @@ class ReminderRulesTest {
         val back = ReminderRules.decode(ReminderRules.encode(listOf(later, sooner)))
         assertEquals(listOf(sooner, later), back)
         assertEquals(emptyList<Reminder>(), ReminderRules.decode("not json"))
+    }
+
+    @Test
+    fun legacyReminderJsonMigratesEpochAndZone() {
+        val legacyJson = """[{"id":5,"text":"Doctor appointment","at":"2026-11-05T10:30:00"}]"""
+        val decoded = ReminderRules.decode(legacyJson)
+        assertEquals(1, decoded.size)
+        val reminder = decoded.first()
+        assertEquals(5L, reminder.id)
+        assertEquals("Doctor appointment", reminder.text)
+        assertEquals(LocalDateTime.of(2026, 11, 5, 10, 30), reminder.at)
+        assertTrue(reminder.epochMillis > 0)
+        assertEquals(ZoneId.systemDefault().id, reminder.zoneId)
     }
 
     @Test

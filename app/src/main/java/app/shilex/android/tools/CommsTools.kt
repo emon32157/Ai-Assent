@@ -9,12 +9,14 @@ import android.telephony.TelephonyManager
 import org.json.JSONObject
 import java.util.Locale
 
+import app.shilex.android.notify.CallConsent
+
 /**
  * Calls and messages. Each one opens the right app with everything filled in and the
  * user taps Call or Send there, so the model never completes these on its own.
  */
 object CommsTools {
-    fun all(): List<PhoneTool> = listOf(CallContact, WhatsAppSend, SmsSend)
+    fun all(): List<PhoneTool> = listOf(CallContact, CallConfirm, WhatsAppSend, SmsSend)
 
     private val who = arrayOf(
         Schema.string("name", "Contact name as the user said it. Leave empty if they gave a number."),
@@ -27,7 +29,7 @@ object CommsTools {
 
         override fun declaration() = Schema.function(
             name,
-            "Opens the phone dialer with a contact's number filled in; the user taps Call.",
+            "Resolves a contact's number and prepares a call confirmation. Never dials directly.",
             *who,
         )
 
@@ -36,9 +38,57 @@ object CommsTools {
                 is Recipients.Result.Found -> r
                 is Recipients.Result.Answer -> return r.json
             }
-            val intent = Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", to.number, null))
-            return host.openApp(intent, "Phone", "The dialer will open with ${to.name} after you speak; the user taps Call.")
+            val displayName = to.name.ifBlank { to.number }
+            val explicitNumber = args.text("number").count(Char::isDigit) >= 6 &&
+                args.text("number").filter(Char::isDigit) == to.number.filter(Char::isDigit)
+            val readBack = CallConsent.prepare(displayName, to.number, System.currentTimeMillis(), explicitNumber)
+            return Results.done("Say exactly: $readBack Then wait. Only if the user answers yes, call call_confirm.")
         }
+    }
+
+    private object CallConfirm : PhoneTool {
+        override val name = "call_confirm"
+
+        override fun declaration() = Schema.function(
+            name,
+            "Places the pending call if the user confirmed with yes. Must only be called after user confirms.",
+        )
+
+        override suspend fun run(args: JSONObject, host: ToolHost): JSONObject {
+            val outcome = CallConsent.checkAndClear(System.currentTimeMillis())
+            val confirmed = when (outcome) {
+                is CallConsent.Outcome.Confirmed -> outcome
+                is CallConsent.Outcome.Refused -> return Results.failed("refused", outcome.why)
+            }
+            val number = confirmed.number
+            val name = confirmed.name
+
+            // Never auto-call emergency numbers (999, 112, 911, 16xxx short codes): always use ACTION_DIAL for them.
+            if (isEmergencyOrSpecial(number)) {
+                val dialIntent = Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", number, null))
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                return host.openApp(dialIntent, "Phone", "Emergency or special service number. Dialing $name in the phone app; tap Call.")
+            }
+
+            if (!host.hasPermission(android.Manifest.permission.CALL_PHONE)) {
+                host.requestPermission(android.Manifest.permission.CALL_PHONE)
+                val dialIntent = Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", number, null))
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                return host.openApp(dialIntent, "Phone", "Call permission not granted. Dialing $name in the phone app; tap Call.")
+            }
+
+            val callIntent = Intent(Intent.ACTION_CALL, Uri.fromParts("tel", number, null))
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            return host.openApp(callIntent, "Phone", "Calling $name.")
+        }
+    }
+
+    fun isEmergencyOrSpecial(number: String): Boolean {
+        val digits = number.filter(Char::isDigit)
+        if (digits in setOf("999", "112", "911", "100", "101", "102", "108")) return true
+        if (digits.length == 5 && digits.startsWith("16")) return true
+        if (digits.length in 3..5 && (digits.startsWith("10") || digits.startsWith("16") || digits.startsWith("99"))) return true
+        return false
     }
 
     private object WhatsAppSend : PhoneTool {

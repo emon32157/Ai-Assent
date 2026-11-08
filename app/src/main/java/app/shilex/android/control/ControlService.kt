@@ -78,7 +78,10 @@ class ControlService : AccessibilityService() {
                 val text = own.ifEmpty { childText(node) }.ifEmpty { node.viewIdResourceName?.substringAfterLast('/').orEmpty() }
                 if (text.isNotEmpty() || node.isEditable) {
                     val number = elements.size + 1
-                    elements += ScreenElement(number, role(node), text, if (node.isEditable) node.text?.toString().orEmpty() else "")
+                    val hint = if (Build.VERSION.SDK_INT >= 26) node.hintText?.toString().orEmpty() else ""
+                    val isSecret = ControlRules.isPasswordField(node.isPassword, text, hint, node.viewIdResourceName.orEmpty())
+                    val value = if (node.isEditable && !isSecret) node.text?.toString().orEmpty() else ""
+                    elements += ScreenElement(number, role(node), text, value)
                     nodes[number] = node
                 }
             }
@@ -110,7 +113,13 @@ class ControlService : AccessibilityService() {
         while (target != null && !target.isClickable) target = target.parent
         if (target?.performAction(AccessibilityNodeInfo.ACTION_CLICK) == true) return true
         val bounds = Rect().also(node::getBoundsInScreen)
-        return tap(bounds.exactCenterX(), bounds.exactCenterY())
+        val cx = bounds.exactCenterX()
+        val cy = bounds.exactCenterY()
+        if (overlay.containsPoint(cx, cy)) {
+            Diag.w("control: click fallback refused inside overlay bounds ($cx, $cy)")
+            return false
+        }
+        return tap(cx, cy)
     }
 
     fun type(node: AccessibilityNodeInfo, text: String): Boolean {
@@ -176,7 +185,7 @@ class ControlService : AccessibilityService() {
     }
 
     /** Taps a screen point (click-by-sight). Callers check [nodeAt] and the risk first. */
-    fun tapAt(x: Float, y: Float): Boolean = !overlay.confirming && tap(x, y)
+    fun tapAt(x: Float, y: Float): Boolean = !overlay.confirming && !overlay.containsPoint(x, y) && tap(x, y)
 
     /** The deepest visible node under a screen point, if the app exposes one there. */
     fun nodeAt(x: Float, y: Float): AccessibilityNodeInfo? {
@@ -202,7 +211,13 @@ class ControlService : AccessibilityService() {
         return false
     }
 
-    private fun tap(x: Float, y: Float) = swipe(x, y, x, y, durationMs = 60)
+    private fun tap(x: Float, y: Float): Boolean {
+        if (overlay.containsPoint(x, y)) {
+            Diag.w("control: tap refused inside overlay bounds ($x, $y)")
+            return false
+        }
+        return swipe(x, y, x, y, durationMs = 60)
+    }
 
     private fun swipe(x1: Float, y1: Float, x2: Float, y2: Float, durationMs: Long = 300): Boolean {
         val path = Path().apply {

@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import app.shilex.android.Diag
+import app.shilex.android.control.ControlRules
 
 /**
  * Hands-free replies through a chat notification's own Reply box (WhatsApp, Messages…),
@@ -22,10 +23,12 @@ object Replies {
     private var next = 1
     private var pending: Pending? = null
     private val heard = StringBuilder()
+    @Volatile private var readyForConsent = false
 
     /** The notification's reply action, if it has one; returns the short id the model uses. */
     @Synchronized
     fun register(key: String, who: String, app: String, pkg: String, n: Notification, at: Long): Int? {
+        if (ControlRules.blocked(pkg)) return null
         val action = n.actions?.firstOrNull { a -> a.remoteInputs?.any { it.allowFreeFormInput } == true } ?: return null
         val id = ids.getOrPut(key) { next++ }
         targets[id] = Target(key, who, app, pkg, action, at)
@@ -56,13 +59,24 @@ object Replies {
         val readBack = "Send \"$text\" to ${target.who} on ${target.app}?"
         pending = Pending(id, text, now, readBack)
         heard.clear()
+        readyForConsent = false
         return readBack
     }
 
-    /** Everything the user says or types; only words after a read-back count for consent. */
+    /** Key for DuplicateGuard to distinguish different reply targets. */
+    @Synchronized
+    fun pendingKey(): String = pending?.let { "${it.id}|${it.text}" }.orEmpty()
+
+    /** Called once TurnComplete has arrived and speaker is no longer audible. */
+    @Synchronized
+    fun readBackFinished() {
+        readyForConsent = true
+    }
+
+    /** Everything the user says or types; only words after a read-back has finished playing count for consent. */
     @Synchronized
     fun heard(text: String) {
-        if (pending != null && text.isNotBlank()) heard.append(' ').append(text)
+        if (pending != null && readyForConsent && text.isNotBlank()) heard.append(' ').append(text)
     }
 
     sealed interface Outcome {
@@ -74,10 +88,13 @@ object Replies {
     fun send(context: Context, now: Long): Outcome {
         val p = pending ?: return Outcome.Refused("Nothing is waiting to be sent. Prepare the reply first.")
         val target = targets[p.id]
+        val spoken = heard.toString()
         pending = null
+        heard.clear()
+        readyForConsent = false
         if (target == null) return Outcome.Refused("That chat's notification is gone, so it can't be answered from here.")
         if (now - p.at > CONSENT_MS) return Outcome.Refused("The confirmation timed out. Ask again if the user still wants it.")
-        if (!VoiceConsent.confirms(heard.toString(), p.text, p.readBack)) {
+        if (!VoiceConsent.confirms(spoken, p.text, p.readBack)) {
             return Outcome.Refused("The user didn't clearly say yes, so nothing was sent. Don't retry unless they ask.")
         }
         val inputs = target.action.remoteInputs ?: return Outcome.Refused("This chat can't be answered from the notification.")

@@ -73,6 +73,14 @@ class AssistantViewModel(app: Application) : AndroidViewModel(app) {
         get() = settings.onboarded
         set(value) { settings.onboarded = value }
 
+    var replyLanguage: String
+        get() = settings.replyLanguage
+        set(value) { settings.replyLanguage = value }
+
+    var model: String
+        get() = settings.model
+        set(value) { settings.model = value }
+
     var localCommands: Boolean
         get() = settings.localCommands
         set(value) { settings.localCommands = value }

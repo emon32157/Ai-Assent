@@ -1,9 +1,20 @@
+import java.net.URI
 import java.security.MessageDigest
+import javax.inject.Inject
+import org.gradle.api.DefaultTask
+import org.gradle.api.file.ArchiveOperations
+import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.file.FileSystemOperations
+import org.gradle.api.provider.Property
+import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.OutputDirectory
+import org.gradle.api.tasks.TaskAction
 
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.secrets)
 }
 
 android {
@@ -20,11 +31,15 @@ android {
         ndk { abiFilters += listOf("arm64-v8a", "armeabi-v7a") }
     }
 
-    // The release key never enters the repo: scripts/android_release.py passes its path and
-    // password (from the macOS Keychain) as environment variables. Without them the release
-    // build is unsigned. Android installs an update only if it is signed with this same key.
+    // Release signing configuration.
     val releaseKeystore = System.getenv("SHILEX_KEYSTORE")
     signingConfigs {
+        create("debugConfig") {
+            storeFile = file("${rootDir}/debug.keystore")
+            storePassword = "android"
+            keyAlias = "androiddebugkey"
+            keyPassword = "android"
+        }
         if (releaseKeystore != null) {
             create("release") {
                 storeFile = file(releaseKeystore)
@@ -36,6 +51,10 @@ android {
     }
 
     buildTypes {
+        debug {
+            signingConfig = signingConfigs.getByName("debugConfig")
+            ndk { abiFilters += listOf("x86_64") }
+        }
         release {
             isMinifyEnabled = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
@@ -51,6 +70,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     // SpeexDSP's echo canceller (BSD), built from src/main/cpp.
     ndkVersion = "27.0.12077973"
@@ -89,31 +109,69 @@ dependencies {
 
 // Vosk's small Indian-English model (Apache 2.0, 36 MB zip): too big for git, so it is
 // downloaded once at build time and checked against a pinned SHA-256.
-val voskModel = "vosk-model-small-en-in-0.4"
-val voskSha256 = "20663dcac4d5cb783a579c54d98339344a688e4ec6e1b4a4b059fd1235454cc7"
+val voskModelName = "vosk-model-small-en-in-0.4"
+val voskModelSha256 = "20663dcac4d5cb783a579c54d98339344a688e4ec6e1b4a4b059fd1235454cc7"
 val voskAssets = layout.buildDirectory.dir("generated/vosk-assets")
 
-val fetchVoskModel by tasks.registering {
-    val out = voskAssets.get().asFile
-    outputs.dir(out)
-    doLast {
-        if (out.resolve("vosk/am/final.mdl").exists()) return@doLast
-        val zip = temporaryDir.resolve("$voskModel.zip")
-        uri("https://alphacephei.com/vosk/models/$voskModel.zip").toURL().openStream().use { input ->
-            zip.outputStream().use { input.copyTo(it) }
+abstract class FetchVoskModelTask @Inject constructor(
+    private val fileSystemOperations: FileSystemOperations,
+    private val archiveOperations: ArchiveOperations,
+) : DefaultTask() {
+
+    @get:Input
+    abstract val modelName: Property<String>
+
+    @get:Input
+    abstract val expectedSha256: Property<String>
+
+    @get:OutputDirectory
+    abstract val outputDir: DirectoryProperty
+
+    @TaskAction
+    fun execute() {
+        val out = outputDir.get().asFile
+        if (out.resolve("vosk/am/final.mdl").exists()) return
+
+        val mName = modelName.get()
+        val expectedHash = expectedSha256.get()
+        val tempDir = temporaryDir
+        val zip = tempDir.resolve("$mName.zip")
+
+        val uri = URI("https://alphacephei.com/vosk/models/$mName.zip")
+        val connection = uri.toURL().openConnection()
+        connection.connectTimeout = 30_000
+        connection.readTimeout = 60_000
+        val inputStream: java.io.InputStream = connection.getInputStream()
+        inputStream.use { input ->
+            zip.outputStream().use { outStream ->
+                input.copyTo(outStream)
+            }
         }
+
         val digest = MessageDigest.getInstance("SHA-256").digest(zip.readBytes())
             .joinToString("") { "%02x".format(it) }
-        check(digest == voskSha256) { "Vosk model download doesn't match its pinned hash ($digest)" }
-        project.copy {
-            from(zipTree(zip))
+        check(digest == expectedHash) { "Vosk model download doesn't match its pinned hash ($digest)" }
+
+        fileSystemOperations.copy {
+            from(archiveOperations.zipTree(zip))
             into(out)
             exclude("**/README")
-            eachFile { path = path.replaceFirst(voskModel, "vosk") }
+            eachFile { path = path.replaceFirst(mName, "vosk") }
             includeEmptyDirs = false
         }
     }
 }
 
+val fetchVoskModel by tasks.registering(FetchVoskModelTask::class) {
+    modelName.set(voskModelName)
+    expectedSha256.set(voskModelSha256)
+    outputDir.set(voskAssets)
+}
+
 android.sourceSets["main"].assets.srcDir(voskAssets)
 tasks.named("preBuild") { dependsOn(fetchVoskModel) }
+
+secrets {
+    propertiesFileName = ".env"
+    defaultPropertiesFileName = ".env.example"
+}

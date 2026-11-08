@@ -12,6 +12,10 @@ class ControlRulesTest {
         listOf(
             "com.phonepe.app", "net.one97.paytm", "com.google.android.apps.nbu.paisa.user",
             "com.x8bit.bitwarden", "com.example.mybank", "app.shilex.android", "com.android.settings",
+            // Bangladeshi MFS and Banks
+            "com.bKash.customerapp", "com.konasl.nagad", "com.dbbl.mbs.apps.main", "com.dbbl.mbs.apps.rocket",
+            "bd.com.upay.customer", "com.ibbl.cellfin", "co.bracbank.astha", "com.thecitybank.citytouch",
+            "com.dbbl.nexus.pay", "com.sonalibank.esheba", "com.ebl.skybanking", "bd.com.bankasia.smartapp",
         ).forEach { assertTrue(it, ControlRules.blocked(it)) }
         listOf("com.whatsapp", "com.google.android.apps.youtube.music", "com.instagram.android")
             .forEach { assertFalse(it, ControlRules.blocked(it)) }
@@ -22,13 +26,31 @@ class ControlRulesTest {
         assertEquals(Risk.Outgoing, ControlRules.clickRisk("Send", ""))
         assertEquals(Risk.Outgoing, ControlRules.clickRisk("", "com.whatsapp:id/send"))
         assertEquals(Risk.Outgoing, ControlRules.clickRisk("भेजें", ""))
+        assertEquals(Risk.Outgoing, ControlRules.clickRisk("পাঠান", ""))
+        assertEquals(Risk.Outgoing, ControlRules.clickRisk("নিশ্চিত করুন", ""))
         assertEquals(Risk.Outgoing, ControlRules.clickRisk("Voice call", ""))
         assertEquals(Risk.Destructive, ControlRules.clickRisk("Delete for everyone", ""))
+        assertEquals(Risk.Destructive, ControlRules.clickRisk("মুছে ফেলুন", ""))
+        assertEquals(Risk.Destructive, ControlRules.clickRisk("লগআউট", ""))
         assertEquals(Risk.Money, ControlRules.clickRisk("Place order", ""))
         assertEquals(Risk.Money, ControlRules.clickRisk("Proceed to Pay ₹499", ""))
         assertEquals(Risk.Money, ControlRules.clickRisk("Pay Now", ""))
+        assertEquals(Risk.Money, ControlRules.clickRisk("টাকা পাঠান", ""))
+        assertEquals(Risk.Money, ControlRules.clickRisk("পেমেন্ট করুন", ""))
+        assertEquals(Risk.Money, ControlRules.clickRisk("bKash payment", ""))
         assertEquals(Risk.Outgoing, ControlRules.clickRisk("Book tickets", ""))
         assertEquals(Risk.Safe, ControlRules.clickRisk("Select Seats", ""))
+    }
+
+    @Test
+    fun passwordFieldRecognition() {
+        assertTrue(ControlRules.isPasswordField(true, "", "", ""))
+        assertTrue(ControlRules.isPasswordField(false, "Enter PIN", "", ""))
+        assertTrue(ControlRules.isPasswordField(false, "পাসওয়ার্ড দিন", "", ""))
+        assertTrue(ControlRules.isPasswordField(false, "ওটিপি কোড", "", ""))
+        assertTrue(ControlRules.isPasswordField(false, "CVV", "", ""))
+        assertTrue(ControlRules.isPasswordField(false, "", "", "com.app:id/password_input"))
+        assertFalse(ControlRules.isPasswordField(false, "Search movie", "Type here", "search_box"))
     }
 
     @Test

@@ -23,6 +23,7 @@ import app.shilex.android.R
 import app.shilex.android.control.ControlService
 import app.shilex.android.live.FunctionCall
 import app.shilex.android.live.FunctionResult
+import app.shilex.android.notify.CallConsent
 import app.shilex.android.tools.AppTools
 import app.shilex.android.tools.BookingTools
 import app.shilex.android.tools.CalendarTools
@@ -87,18 +88,24 @@ class ToolRunner(
         tools.values.filter { Capabilities.of(it.name) != null }.forEach { put(it.declaration()) }
     }
 
+    private fun guardKey(name: String, args: JSONObject): String = when (name) {
+        "reply_send" -> Replies.pendingKey()
+        "call_confirm" -> CallConsent.pendingNumber()
+        else -> args.toString()
+    }
+
     fun handle(calls: List<FunctionCall>) {
         scope.launch(Dispatchers.Default) {
             val results = calls.map { call ->
                 // Only tools in the capability registry run; the model can't invent others.
                 val capability = Capabilities.of(call.name)
                 val tool = tools[call.name]?.takeIf { capability != null }
-                val args = call.args.toString()
+                val key = guardKey(call.name, call.args)
                 val sensitive = capability != null && capability.risk >= Risk.High
                 val clean = trust.mayLearn
                 val response = if (tool == null) {
                     Results.failed("unknown_tool", "There is no tool called ${call.name}.")
-                } else if (sensitive && !duplicates.allow(call.name, args)) {
+                } else if (sensitive && !duplicates.allow(call.name, key)) {
                     Diag.w("tool: ${call.name} refused as a duplicate")
                     Results.failed("duplicate", "This exact action was just done. Tell the user; repeat only if they ask again in new words.")
                 } else if (trust.verdict(capability!!) == TurnTrust.Verdict.AskUser && !allowedAfterScreen(capability.title)) {
@@ -123,12 +130,18 @@ class ToolRunner(
                 if (tool != null) trust.after(call.name)
                 val status = response.optString("status")
                 if (status == "done" && clean) learnFrom(call)
-                if (sensitive && status != "done" && status != "needs_user_tap") duplicates.forget(call.name, args)
+                if (sensitive && status != "done" && status != "needs_user_tap") duplicates.forget(call.name, key)
                 if (tool != null && response.optString("code") != "duplicate") {
                     val handover = capability?.handover.orEmpty().takeIf { status == "done" || status == "needs_user_tap" }.orEmpty()
                     TaskTracker.result(call.name, status, handover)
                 }
-                val outcome = if (capability?.finish == Finish.User && status == "done") "Opened; you finish it." else ActivityLog.statusLabel(status)
+                val outcome = if (call.name == "call_confirm" || call.name == "call_contact") {
+                    ActivityLog.outcomeFor(call.name, status, response.optString("code"), response.optString("message"))
+                } else if (capability?.finish == Finish.User && status == "done") {
+                    "Opened; you finish it."
+                } else {
+                    ActivityLog.statusLabel(status)
+                }
                 ActivityLog.add(ActivityLog.Entry(capability?.title ?: ActivityLog.toolLabel(call.name), outcome, local = false))
                 FunctionResult(call.id, call.name, response)
             }
@@ -140,10 +153,11 @@ class ToolRunner(
         cancelled += ids
     }
 
-    /** The user spoke or typed: their words lead again ([TurnTrust]) and may answer a reply read-back. */
+    /** The user spoke or typed: their words lead again ([TurnTrust]) and may answer a reply or call read-back. */
     fun userSpoke(text: String = "") {
         trust.userSpoke()
         Replies.heard(text)
+        CallConsent.heard(text)
     }
 
     /** JARVIS's own Allow card, which only a finger can press. No card (control off): not allowed. */
@@ -226,7 +240,7 @@ class ToolRunner(
             )
         }
         val manager = context.getSystemService(NotificationManager::class.java)
-        manager.createNotificationChannel(NotificationChannel(TAP_CHANNEL, "Open apps", NotificationManager.IMPORTANCE_HIGH))
+        manager.createNotificationChannel(NotificationChannel(TAP_CHANNEL, context.getString(R.string.notif_channel_open_apps), NotificationManager.IMPORTANCE_HIGH))
         val tap = PendingIntent.getActivity(
             context,
             TAP_ID,
@@ -235,8 +249,8 @@ class ToolRunner(
         )
         val notification = NotificationCompat.Builder(context, TAP_CHANNEL)
             .setSmallIcon(R.drawable.ic_notification)
-            .setContentTitle("Open $label")
-            .setContentText("Tap to finish what you asked.")
+            .setContentTitle(context.getString(R.string.notif_open_app_title, label))
+            .setContentText(context.getString(R.string.notif_open_app_text))
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setContentIntent(tap)
             .setAutoCancel(true)

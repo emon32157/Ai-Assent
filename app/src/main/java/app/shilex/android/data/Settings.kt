@@ -15,7 +15,7 @@ class Settings(context: Context) {
         get() = prefs.getString("voice", "Puck") ?: "Puck"
         set(value) = prefs.edit().putString("voice", value).apply()
 
-    /** "auto", "english", "hindi" or "hinglish", as on desktop. */
+    /** "auto", "english", "hindi", "hinglish" or "bengali", as on desktop. */
     var replyLanguage: String
         get() = prefs.getString("reply_language", "auto") ?: "auto"
         set(value) = prefs.edit().putString("reply_language", value).apply()
@@ -90,9 +90,12 @@ class Settings(context: Context) {
     fun unwatch(listener: SharedPreferences.OnSharedPreferenceChangeListener) =
         prefs.unregisterOnSharedPreferenceChangeListener(listener)
 
-    val speechLanguages: List<String> = listOf("en-IN", "hi-IN")
+    val speechLanguages: List<String> = listOf("en-IN", "hi-IN", "bn-BD")
 
     companion object {
         const val DEFAULT_MODEL = "gemini-3.1-flash-live-preview"
+        const val SIGHT_AIM_MODEL = "gemini-2.5-flash"
+        val REPLY_LANGUAGES = listOf("auto", "english", "hindi", "hinglish", "bengali")
+        val AVAILABLE_MODELS = listOf("gemini-3.1-flash-live-preview", "gemini-2.5-flash", "gemini-2.0-flash-exp")
     }
 }

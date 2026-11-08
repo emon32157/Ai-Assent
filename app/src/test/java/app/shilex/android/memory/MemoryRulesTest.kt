@@ -19,7 +19,7 @@ class MemoryRulesTest {
     fun secretsAreNeverKept() {
         listOf(
             "my bank password is hunter2", "ATM PIN 4821", "UPI pin is 1234", "card 4111 1111 1111 1111",
-            "the OTP was 552910",
+            "the OTP was 552910", "আমার পাসওয়ার্ড হলো secret123", "বিকাশ পিন ১২৩৪", "ওটিপি কোড ৫৪২১", "গোপন পিন",
         ).forEach { assertTrue(it, MemoryRules.looksSecret(it)) }
         listOf("Parked on level 2", "Shoe size is 9", "Wi-Fi router is in the hall", "Pinned the poster")
             .forEach { assertFalse(it, MemoryRules.looksSecret(it)) }

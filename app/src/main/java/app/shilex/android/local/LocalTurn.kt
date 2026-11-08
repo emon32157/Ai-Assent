@@ -144,6 +144,11 @@ class LocalTurn private constructor(private val context: Context) {
     }
 
     private fun handle(texts: List<String>) {
+        if (texts.any { it.any { c -> c in '\u0980'..'\u09FF' } } || Locale.getDefault().language == "bn") {
+            Diag.i("local: Bengali speech detected, handing off to Gemini")
+            handOff(texts.firstOrNull())
+            return
+        }
         // Phrases learned from earlier Gemini fallbacks run locally too.
         val command = LocalRouter.match(texts) ?: habits()?.lookup(texts)
         _phase.value = LocalPhase.Doing
@@ -218,6 +223,19 @@ class LocalTurn private constructor(private val context: Context) {
             Diag.w("local: no voice for the reply")
             finish()
             return
+        }
+        if (reply.any { it in '\u0980'..'\u09FF' }) {
+            val bnBd = Locale("bn", "BD")
+            val res = voice.setLanguage(bnBd)
+            if (res == TextToSpeech.LANG_MISSING_DATA || res == TextToSpeech.LANG_NOT_SUPPORTED) {
+                val bnIn = Locale("bn", "IN")
+                val res2 = voice.setLanguage(bnIn)
+                if (res2 == TextToSpeech.LANG_MISSING_DATA || res2 == TextToSpeech.LANG_NOT_SUPPORTED) {
+                    voice.language = Locale("en", "IN")
+                }
+            }
+        } else {
+            voice.language = Locale("en", "IN")
         }
         _phase.value = LocalPhase.Speaking
         voice.speak(reply, TextToSpeech.QUEUE_FLUSH, null, "reply")

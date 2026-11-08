@@ -27,18 +27,20 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import app.shilex.android.R
 import app.shilex.android.assistant.AssistantViewModel
 import app.shilex.android.assistant.UiState
 import app.shilex.android.local.ActivityLog
 import app.shilex.android.local.LocalPhase
 import app.shilex.android.task.Task
 
-private enum class Tab(val label: String, val icon: ImageVector) {
-    Home("Home", Icons.Filled.Home),
-    Automations("Automations", Icons.Filled.Star),
-    Activity("Activity", Icons.Filled.List),
-    Settings("Settings", Icons.Filled.Settings),
+private enum class Tab(val labelRes: Int, val icon: ImageVector) {
+    Home(R.string.tab_home, Icons.Filled.Home),
+    Automations(R.string.tab_automations, Icons.Filled.Star),
+    Activity(R.string.tab_activity, Icons.Filled.List),
+    Settings(R.string.tab_settings, Icons.Filled.Settings),
 }
 
 @Composable
@@ -91,7 +93,7 @@ private fun Content(
                         selected = tab == it.ordinal,
                         onClick = { setTab(it.ordinal) },
                         icon = { Icon(it.icon, contentDescription = null) },
-                        label = { Text(it.label) },
+                        label = { Text(stringResource(it.labelRes)) },
                         colors = NavigationBarItemDefaults.colors(indicatorColor = MaterialTheme.colorScheme.primaryContainer),
                     )
                 }

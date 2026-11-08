@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Display name lives here and in Branding.kt only. -->
+    <string name="app_name">জার্ভিস</string>
+    <string name="control_label">ফোন নিয়ন্ত্রণ (ভয়েস সহকারী)</string>
+    <string name="control_description">সহকারীকে আপনার স্ক্রিনে কী আছে তা পড়তে এবং আপনার নির্দেশে ট্যাপ, টাইপ এবং স্ক্রোল করার অনুমতি দেয়। বার্তা পাঠানো, কল করা, মুছে ফেলা বা অর্থপ্রদানের আগে অনুমতির জন্য অপেক্ষা করে। এটি কখনই ব্যাংকিং, এমএফএস, ইউপিআই, পাসওয়ার্ড বা সেটিংস অ্যাপ পড়ে না এবং আপনার ভয়েস নির্দেশের উত্তর দেওয়া ছাড়া স্ক্রিনের তথ্য কোথাও পাঠায় না।</string>
+
+    <!-- Notification strings -->
+    <string name="notif_listening_title">%s শুনছে</string>
+    <string name="notif_listening_text">যেকোনো সময় কথা বলুন। ৩ মিনিট নীরবতার পর এটি বন্ধ হবে।</string>
+    <string name="notif_listening_stop">বন্ধ করুন</string>
+    <string name="notif_wake_title">কথা বলতে \"%s\" বলুন</string>
+    <string name="notif_wake_text">শুধুমাত্র এই ফোনে শোনা হচ্ছে; বলার আগে কোনো তথ্য পাঠানো হয় না।</string>
+    <string name="notif_wake_turn_off">বন্ধ করুন</string>
+    <string name="notif_channel_listening">শুনছে</string>
+    <string name="notif_channel_listening_desc">%s আপনার কথা শুনতে পাওয়ার সময় দেখানো হয়।</string>
+    <string name="notif_channel_standby">ওয়েক ওয়ার্ডের জন্য অপেক্ষা করছে</string>
+    <string name="notif_channel_open_apps">অ্যাপ খুলুন</string>
+    <string name="notif_open_app_title">%s খুলুন</string>
+    <string name="notif_open_app_text">আপনার অনুরোধ সম্পন্ন করতে ট্যাপ করুন।</string>
+    <string name="notif_channel_reminders">অনুস্মারক</string>
+    <string name="notif_reminder_title">%s অনুস্মারক</string>
+
+    <!-- Common Actions & Labels -->
+    <string name="allow">অনুমতি দিন</string>
+    <string name="deny">বাতিল করুন</string>
+    <string name="settings">সেটিংস</string>
+    <string name="reply_language">উত্তরের ভাষা</string>
+    <string name="model">মডেল</string>
+    <string name="save">সংরক্ষণ করুন</string>
+    <string name="cancel">বাতিল</string>
+    <string name="voice">কণ্ঠস্বর</string>
+    <string name="wake_word">ওয়েক ওয়ার্ড</string>
+    <string name="home_city">শহর</string>
+    <string name="speech_recognition">কণ্ঠ শনাক্তকরণ</string>
+    <string name="phone_control">ফোন নিয়ন্ত্রণ</string>
+    <string name="action_stop">বন্ধ করুন</string>
+    <string name="action_talk">কথা বলুন</string>
+    <string name="action_open">খুলুন</string>
+    <string name="action_change">পরিবর্তন</string>
+    <string name="action_replace">প্রতিস্থাপন</string>
+    <string name="action_turn_on">চালু করুন</string>
+    <string name="action_delete">মুছুন</string>
+    <string name="action_done">সম্পন্ন</string>
+    <string name="action_forget">মুছে ফেলুন</string>
+    <string name="action_forget_all">সব মুছে ফেলুন</string>
+
+    <!-- Navigation Tabs -->
+    <string name="tab_home">হোম</string>
+    <string name="tab_automations">অটোমেশন</string>
+    <string name="tab_activity">কার্যক্রম</string>
+    <string name="tab_settings">সেটিংস</string>
+
+    <!-- Status and Badges -->
+    <string name="status_listening">শুনছে</string>
+    <string name="status_working">কাজ করছে</string>
+    <string name="status_speaking">বলছে</string>
+    <string name="status_thinking">ভাবছে</string>
+    <string name="status_standby">প্রস্তুত</string>
+    <string name="status_hint_local_listening">নির্দেশ বলুন। সহজ নির্দেশগুলো ফোনেই চলবে।</string>
+    <string name="status_hint_local_doing">এই ফোনেই করা হচ্ছে।</string>
+    <string name="status_hint_local_speaking">ফোনেই উত্তর দেওয়া হয়েছে।</string>
+    <string name="status_hint_connecting">জেমিনির সাথে যুক্ত হচ্ছে…</string>
+    <string name="status_hint_gemini_listening">যেকোনো সময় কথা বলুন, ইংরেজি, হিন্দি, বাংলা বা বাংলিশে।</string>
+    <string name="status_hint_speaking">কথা থামাতে গোলকে ট্যাপ করুন।</string>
+    <string name="status_hint_standby_wake">\"%s\" বলুন, অথবা মাইকে ট্যাপ করুন।</string>
+    <string name="status_hint_standby_tap">কথা বলতে মাইকে ট্যাপ করুন।</string>
+    <string name="badge_on_phone">ফোনে</string>
+    <string name="badge_gemini">জেমিনি</string>
+    <string name="badge_wake_on">ওয়েক ওয়ার্ড চালু</string>
+    <string name="badge_wake_off">ওয়েক ওয়ার্ড বন্ধ</string>
+    <string name="badge_local">লোকাল</string>
+    <string name="badge_needs_you">অনুমতি প্রয়োজন</string>
+    <string name="desc_orb_status">%1$s: %2$s</string>
+
+    <!-- Quick Actions -->
+    <string name="quick_torch_off">টর্চ বন্ধ</string>
+    <string name="quick_torch">টর্চ</string>
+    <string name="quick_battery">ব্যাটারি</string>
+    <string name="quick_time">সময়</string>
+    <string name="quick_pause">থামান</string>
+
+    <!-- Recent Activity on Home -->
+    <string name="recent_header">সাম্প্রতিক</string>
+    <string name="recent_see_all">সব দেখুন</string>
+    <string name="recent_empty">এখনো কিছু নেই। আপনার নির্দেশ এখানে দেখাবে।</string>
+
+    <!-- Activity Screen -->
+    <string name="activity_title">কার্যক্রম</string>
+    <string name="activity_clear">পরিষ্কার করুন</string>
+    <string name="activity_subtitle">কী কাজ করা হয়েছে, কী বলা হয়েছে তা নয়। অ্যাপ বন্ধ হলে মুছে যায়।</string>
+    <string name="activity_empty">এখনো কিছু নেই।</string>
+
+    <!-- Automations Screen -->
+    <string name="automations_title">অটোমেশন</string>
+    <string name="automations_subtitle">\"%s\" বলুন, তারপর নির্দেশ দিন। ইংরেজি, হিন্দি, বাংলা ও বাংলিশ।</string>
+    <string name="routines_title">রুটিন</string>
+    <string name="routines_description">রুটিন চালাতে তার নাম বলুন। মুখে বলুন: \"গুড নাইট নামে একটি রুটিন বানাও: সকাল ৬:৩০ এ অ্যালার্ম, কাল কী আছে বলো\"।</string>
+    <string name="group_on_phone_title">এই ফোনে</string>
+    <string name="group_on_phone_desc">ইন্টারনেট ছাড়াই চলে এবং জেমিনি কি ব্যবহার করে না।</string>
+    <string name="group_tasks_title">আপনার সম্মতিতে কাজ</string>
+    <string name="group_tasks_desc">জেমিনি পরিকল্পনা করে; পাঠানো, কল বা অর্থপ্রদান আপনি শেষ করবেন।</string>
+    <string name="group_cloud_title">জেমিনির সাথে</string>
+    <string name="group_cloud_desc">ইন্টারনেট প্রয়োজন; আপনার জেমিনি কি ব্যবহার করে।</string>
+
+    <!-- Automations Commands -->
+    <string name="cmd_volume">ভলিউম</string>
+    <string name="cmd_volume_eg">\"ভলিউম ৩০ শতাংশ করো\" · \"ভলিউম বাড়াও\" · \"ফোন মিউট করো\"</string>
+    <string name="cmd_music">গান</string>
+    <string name="cmd_music_eg">\"গান থামাও\" · \"পরের গান\" · \"চালিয়ে যাও\"</string>
+    <string name="cmd_flashlight">ফ্ল্যাশলাইট</string>
+    <string name="cmd_flashlight_eg">\"ফ্ল্যাশলাইট জ্বালাও\" · \"টর্চ বন্ধ করো\"</string>
+    <string name="cmd_open_apps">অ্যাপ খুলুন</string>
+    <string name="cmd_open_apps_eg">\"ইউটিউব খোলো\" · \"ক্যালেন্ডার খোলো\" · \"ক্যামেরা চালু করো\"</string>
+    <string name="cmd_time_date_battery">সময়, তারিখ, ব্যাটারি</string>
+    <string name="cmd_time_date_battery_eg">\"কয়টা বাজে?\" · \"আজকের তারিখ কত\" · \"ব্যাটারি কত আছে\"</string>
+    <string name="cmd_timers_alarms">টাইমার এবং অ্যালার্ম</string>
+    <string name="cmd_timers_alarms_eg">\"৫ মিনিটের টাইমার দাও\" · \"সকাল ৬:৩০ এর অ্যালার্ম দাও\"</string>
+    <string name="cmd_stop">থামো</string>
+    <string name="cmd_stop_eg">\"থাক\" · \"থামো\" · \"বাতিল করো\"</string>
+    <string name="cmd_whatsapp">হোয়াটসঅ্যাপ বার্তা</string>
+    <string name="cmd_whatsapp_eg">\"হোয়াটসঅ্যাপে রাহুলকে বলো আমি ৭টায় আসব\"। মিল থাকা নাম যাচাই করে চ্যাট খুলবে; আপনি দেখে Send চাপবেন। ফোন কন্ট্রোল চালু থাকলে চ্যাটে বার্তা দেখা গেলেই কেবল \"পাঠানো হয়েছে\" বলবে।</string>
+    <string name="cmd_movie_tickets">সিনেমার টিকিট</string>
+    <string name="cmd_movie_tickets_eg">\"কাল সন্ধ্যার ৪টি টিকিট কাটো\"। আপনার টিকিট অ্যাপ বা ওয়েব সার্চ খুলবে; আপনি শো ও সিট বেছে পেমেন্ট করবেন। এটি নিজে থেকে কখনো পেমেন্ট বা বুকিং করে না।</string>
+    <string name="cmd_calls">কল</string>
+    <string name="cmd_calls_eg">\"মাকে কল করো\"। নম্বরসহ নিশ্চিত করতে চাইবে, তারপর সরাসরি কল করবে বা ডায়ালার খুলবে।</string>
+    <string name="cmd_songs">গান</string>
+    <string name="cmd_songs_eg">\"ইউটিউব মিউজিকে প্রিয় গানটি বাজাও\"</string>
+    <string name="cmd_screen">আপনার স্ক্রিন</string>
+    <string name="cmd_screen_eg">\"আমার স্ক্রিনে কী আছে?\" · \"এটির উত্তর দাও\" (ফোন কন্ট্রোল প্রয়োজন)</string>
+    <string name="cmd_questions">প্রশ্নোত্তর</string>
+    <string name="cmd_questions_eg">আবহাওয়া, তথ্য, ব্যাখ্যা বা যেকোনো কিছু</string>
+    <string name="cmd_reminders">অনুস্মারক</string>
+    <string name="cmd_reminders_eg">\"বিকাল ৫টায় কল করার কথা মনে করিয়ে দাও\"</string>
+
+    <!-- Task Card -->
+    <string name="task_payment_you">পেমেন্ট: আপনি করবেন</string>
+    <string name="task_state_understanding">বোঝার চেষ্টা করছে</string>
+    <string name="task_state_planning">আপনার উত্তরের অপেক্ষায়</string>
+    <string name="task_state_awaiting">আপনার সম্মতির অপেক্ষায়</string>
+    <string name="task_state_executing">কাজ করছে</string>
+    <string name="task_state_waiting_you">আপনার পালা</string>
+    <string name="task_state_completed">সম্পন্ন</string>
+    <string name="task_state_failed">কাজ করেনি</string>
+
+    <!-- Control Card -->
+    <string name="control_card_title">ফোন নিয়ন্ত্রণ</string>
+    <string name="control_card_on_desc">চালু আছে। বার্তা পাঠানো, কল, মোছা বা পেমেন্টের জন্য অনুমতির অপেক্ষা করে।</string>
+    <string name="control_card_off_title">ফোন নিয়ন্ত্রণ বন্ধ আছে</string>
+    <string name="control_card_off_desc">চালু করুন যাতে %s আপনার নির্দেশে স্ক্রিন পড়তে এবং ট্যাপ, টাইপ ও স্ক্রোল করতে পারে, যেমন গান বাজানো বা হোয়াটসঅ্যাপে উত্তর দেওয়া। পাঠানো, কল, মোছা ও পেমেন্ট সবসময় আপনার অনুমতির অপেক্ষা করে। ব্যাংকিং, এমএফএস, ইউপিআই, পাসওয়ার্ড ও সেটিংস অ্যাপ কখনই পড়া হয় না।</string>
+    <string name="control_card_switch_greyed">সুইচটি ধূসর হয়ে আছে?</string>
+    <string name="control_card_restricted_hint">সুইচ ধূসর থাকলে: App info → ⋮ (উপরে ডানে) → Allow restricted settings চাপুন, তারপর আবার চেষ্টা করুন।</string>
+
+    <!-- Key Form -->
+    <string name="key_form_desc">Google AI Studio-তে কি তৈরি করা হয়। ফ্রি টিয়ারে ব্যবহারের সীমাবদ্ধতা রয়েছে; পেইড ব্যবহারে গুগল অ্যাকাউন্টে বিল হয়। কি গুগলের সাথে যাচাই করে এই ফোনে এনক্রিপ্ট করে রাখা হয়।</string>
+    <string name="key_form_link">Google AI Studio থেকে কি নিন</string>
+    <string name="key_form_label">Gemini API কি</string>
+    <string name="key_form_checking">গুগলের সাথে যাচাই করা হচ্ছে…</string>
+    <string name="key_form_save">যাচাই ও সংরক্ষণ করুন</string>
+
+    <!-- Voice Setup Dialog -->
+    <string name="voice_setup_title">%s-কে আপনার কণ্ঠ শেখান</string>
+    <string name="voice_setup_sample_progress">নমুনা %1$d এর %2$d</string>
+    <string name="voice_setup_instruction">Record চাপুন, \"এখন বলুন\" আসা পর্যন্ত অপেক্ষা করুন, তারপর স্বাভাবিকভাবে \"%s\" বলুন।</string>
+    <string name="voice_setup_privacy">শুধুমাত্র এই ফোনে ভয়েস বৈশিষ্ট্য হিসেবে সংরক্ষিত, কোনো রেকর্ডিং নয়। আপনি যেকোনো সময় এটি মুছে ফেলতে পারেন।</string>
+    <string name="voice_setup_ready">প্রস্তুত হন…</string>
+    <string name="voice_setup_say_now">এখন \"%s\" বলুন</string>
+    <string name="voice_setup_got_all">সব %dটি পাওয়া গেছে। Save চাপুন।</string>
+    <string name="voice_setup_got_one">পাওয়া গেছে। পরেরটির জন্য Record চাপুন।</string>
+    <string name="voice_setup_listening">শুনছে…</string>
+    <string name="voice_setup_record">রেকর্ড</string>
+    <string name="voice_setup_saved">আপনার কণ্ঠস্বর সংরক্ষিত আছে।</string>
+    <string name="voice_setup_not_saved">সাড়া দিচ্ছে না? আপনার কণ্ঠস্বর শেখান।</string>
+    <string name="voice_setup_redo">পুনরায় করুন</string>
+    <string name="voice_setup_teach">কণ্ঠস্বর শেখান</string>
+
+    <!-- Settings Screen -->
+    <string name="settings_sec_gemini">জেমিনি</string>
+    <string name="settings_api_key_title">এপিআই কি</string>
+    <string name="settings_api_key_desc">আপনার নিজস্ব কি, এই ফোনে Android Keystore দিয়ে এনক্রিপ্ট করা। কেবল যেসব নির্দেশ ফোন একা করতে পারে না তার জন্য ব্যবহৃত হয়। জেমিনির ব্যবহার আপনার কি-র সীমার মধ্যে থাকবে।</string>
+    <string name="settings_model_desc">ভয়েস কথোপকথনের জন্য ব্যবহৃত লাইভ মডেল: %s</string>
+    <string name="settings_model_dialog_title">Gemini Live মডেল</string>
+    <string name="settings_model_dialog_desc">একটি মডেল বেছে নিন বা কাস্টম নাম লিখুন:</string>
+    <string name="settings_model_name_label">মডেলের নাম</string>
+    <string name="settings_default_assistant_title">ডিফল্ট সহকারী</string>
+    <string name="settings_default_assistant_desc">কথা বলতে হোম বাটন চেপে ধরে রাখুন বা কোণা থেকে সোয়াইপ করুন।</string>
+    <string name="settings_sec_conversation">কথোপকথন</string>
+    <string name="settings_reply_lang_desc">%1$s যে ভাষায় উত্তর দেবে: %2$s</string>
+    <string name="settings_talk_over_title">%s কথা বলার সময় কথা বলুন</string>
+    <string name="settings_talk_over_desc">উত্তর চলাকালীন কথা বলে তাকে থামিয়ে দিন, লাউডস্পিকারেও। এই ফোনের ইকো ক্যানসেলার আগে নিজের কণ্ঠ সরিয়ে নেয়। নিজে নিজে থেমে গেলে এটি বন্ধ করুন।</string>
+    <string name="settings_wave_title">হাত নেড়ে থামান</string>
+    <string name="settings_wave_desc">%s কথা বলার সময় থামানোর জন্য ফোনের উপরের অংশে হাত নাড়ুন। হেডফোন থাকলে আপনি সরাসরি কথা বলেও থামাতে পারেন।</string>
+    <string name="settings_sec_orb">ভাসমান গোলক</string>
+    <string name="settings_orb_title">যেকোনো অ্যাপের উপরে %s ব্যবহার করুন</string>
+    <string name="settings_orb_desc">অ্যাপের ওপর একটি ছোট গোলক ভাসবে। কথা বলতে ট্যাপ, টাইপ করতে ডাবল-ট্যাপ, সরাতে টেনে নিন। \"অন্যান্য অ্যাপের উপরে প্রদর্শন\" প্রয়োজন; %s খোলা থাকলে এটি লুকিয়ে থাকে।</string>
+    <string name="settings_sec_notifications">বিজ্ঞপ্তি</string>
+    <string name="settings_miss_title">আমি কী মিস করেছি?</string>
+    <string name="settings_miss_desc">%1$s\"আমি কী মিস করেছি?\" জিজ্ঞেস করুন এবং অন্যদের বার্তা আগে শুনুন। নোটিফিকেশন এই ফোনের মেমরিতে থাকে; আপনি জিজ্ঞেস করলেই কেবল ওটিপি গোপন রেখে সংক্ষেপ জেমিনিতে যায়।</string>
+    <string name="settings_state_on">চালু। </string>
+    <string name="settings_state_off">বন্ধ। </string>
+    <string name="settings_wake_title">\"%s\" বলুন</string>
+    <string name="settings_wake_desc">শুধুমাত্র এই ফোনেই শোনা হয়। টেস্ট মডেল: রিলিজ বিল্ডের জন্য নয়।</string>
+    <string name="settings_wake_not_build_title">এই বিল্ডে অন্তর্ভুক্ত নয়</string>
+    <string name="settings_wake_not_build_desc">%s-এর নিজস্ব মডেল তৈরি হলে ওয়েক ওয়ার্ড চালু হবে।</string>
+    <string name="settings_sec_local">লোকাল নির্দেশ</string>
+    <string name="settings_local_title">ফোনে সহজ নির্দেশগুলো পরিচালনা করুন</string>
+    <string name="settings_local_desc">ভলিউম, মিউজিক, ফ্ল্যাশলাইট, অ্যাপ, সময়, টাইমার ও অ্যালার্ম জেমিনি ছাড়াই এখানে চলবে।</string>
+    <string name="settings_network_title">ফোনের স্পিচ সার্ভিস ব্যবহার করুন</string>
+    <string name="settings_network_desc">উন্নত স্বীকৃতি, তবে ওয়েক ওয়ার্ডের পরের কথা সার্ভিসে (সাধারণত Google) পাঠায় এবং ইন্টারনেট প্রয়োজন। বন্ধ থাকলে: কণ্ঠ এই ফোনেই থাকবে।</string>
+    <string name="settings_speech_heard_title">কণ্ঠ শুনছে</string>
+    <string name="engine_on_device">ফোনের অন-ডিভাইস রিকগনাইজার। ইন্টারনেটের প্রয়োজন নেই।</string>
+    <string name="engine_offline">এই ফোনের অফলাইন মডেল (Vosk)। ইন্টারনেটের প্রয়োজন নেই; ইংরেজি শব্দের জন্য সেরা।</string>
+    <string name="engine_network">ফোনের স্পিচ সার্ভিস (সাধারণত Google)। ইন্টারনেট প্রয়োজন।</string>
+    <string name="engine_none">স্থানীয় কোনো ব্যবস্থা নেই, তাই প্রতিটি অনুরোধ জেমিনি শুনবে।</string>
+    <string name="settings_sec_learning">শেখা</string>
+    <string name="settings_learn_title">%s ব্যবহারের ধরণ থেকে শিখুন</string>
+    <string name="settings_learn_desc">কেবল এই ফোনেই থাকে: আপনি কোন নির্দেশ কখন ব্যবহার করেন এবং জেমিনি একবার বোঝার পর আপনার নিজস্ব বাক্য। পরিচিতি কখনোই নয়।</string>
+    <string name="settings_learned_title">যা যা জানে</string>
+    <string name="settings_sec_permissions">অনুমতি</string>
+    <string name="settings_battery_title">ব্যাকগ্রাউন্ডে চলা</string>
+    <string name="settings_battery_allowed">অনুমোদিত। ফোন ওয়েক ওয়ার্ড বন্ধ করবে না।</string>
+    <string name="settings_battery_disallowed">ব্যাটারি বাঁচাতে ফোন ওয়েক ওয়ার্ড বন্ধ করতে পারে। Battery → Unrestricted-এ %s-কে অনুমতি দিন।</string>
+    <string name="settings_sec_privacy">গোপনীয়তা</string>
+    <string name="settings_privacy_leaves_title">যা ফোন থেকে বাইরে যায়</string>
+    <string name="settings_privacy_leaves_desc">ওয়েক ওয়ার্ড ও লোকাল নির্দেশ এই ফোনেই থাকে। জেমিনি কেবল সেসব অনুরোধ পায় যা ফোন সমাধান করতে পারে না। কিছুই রেকর্ড হয় না। ডায়াগনস্টিক লগ কেবল সময় ও অবস্থা রাখে, আপনার কথা কখনো নয়।</string>
+    <string name="settings_standby_title">স্ট্যান্ডবাই</string>
+    <string name="settings_standby_desc">অনুরোধের মধ্যবর্তী সময়ে কেবল ওয়েক ওয়ার্ড চলে; জেমিনির সংযোগ বিচ্ছিন্ন থাকে।</string>
+    <string name="settings_remembers_title">%s যা মনে রাখে</string>
+    <string name="settings_remembers_desc">%dটি নোট যা মনে রাখতে বলেছিলেন, কেবল এই ফোনেই সংরক্ষিত। আপনি জিজ্ঞেস করলেই কেবল জেমিনি দেখতে পায়।</string>
+    <string name="settings_sec_about">সম্পর্কে</string>
+    <string name="settings_version">সংস্করণ %s</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_welcome_desc">আপনার ফোনের জন্য একটি ভয়েস সহকারী, ইংরেজি, হিন্দি, বাংলা ও বাংলিশে।</string>
+    <string name="onboarding_get_started">শুরু করুন</string>
+    <string name="onboarding_key_title">আপনার জেমিনি কি</string>
+    <string name="onboarding_key_desc">%s আপনার নিজস্ব কি দিয়ে গুগল জেমিনি ব্যবহার করে এমন কাজের জন্য যা ফোন নিজে করতে পারে না।</string>
+    <string name="onboarding_key_saved">আপনার কি সংরক্ষিত এবং যাচাই করা হয়েছে।</string>
+    <string name="onboarding_continue">এগিয়ে যান</string>
+    <string name="onboarding_where_title">কী কোথায় চলে</string>
+    <string name="onboarding_where_desc">সহজ নির্দেশগুলো কখনোই ফোন ছেড়ে যায় না। বাকিগুলো জেমিনিতে যায়।</string>
+    <string name="onboarding_local_title">এই ফোনে</string>
+    <string name="onboarding_local_desc">ভলিউম, গান, ফ্ল্যাশলাইট, অ্যাপ খোলা, সময়, ব্যাটারি, টাইমার এবং অ্যালার্ম। ইন্টারনেট নেই, জেমিনিও নেই।</string>
+    <string name="onboarding_gemini_title">জেমিনির সাথে</string>
+    <string name="onboarding_gemini_desc">প্রশ্নোত্তর, কল ও মেসেজ, নাম দিয়ে গান খোঁজা, আপনার স্ক্রিন। ইন্টারনেট প্রয়োজন এবং আপনার কি ব্যবহার করে।</string>
+    <string name="onboarding_handsfree_title">হ্যান্ডস-ফ্রি</string>
+    <string name="onboarding_handsfree_desc">ফোন স্পর্শ না করে \"%s\" বলুন। এটি কেবল ফোনেই শোনে; বলার আগে কিছুই পাঠানো হয় না।</string>
+    <string name="onboarding_wake_desc">অপেক্ষার সময় সামান্য ব্যাটারি ব্যবহার করে।</string>
+    <string name="onboarding_mic_first">প্রথমে মাইক্রোফোনের অনুমতি দিন (Settings → Permissions)।</string>
+    <string name="onboarding_not_in_build">এই বিল্ডে এখনো নেই।</string>
+    <string name="onboarding_control_title">ফোন নিয়ন্ত্রণ (ঐচ্ছিক)</string>
+    <string name="onboarding_control_desc">%s-কে স্ক্রিন পড়তে এবং আপনার হয়ে ট্যাপ করতে দেয়, যেমন গান বাজানো বা মেসেজ লেখা। আপনি পরে সেটিংসে এটি চালু করতে পারেন।</string>
+    <string name="onboarding_skip">এখন বাদ দিন</string>
+    <string name="onboarding_done_title">আপনি প্রস্তুত</string>
+    <string name="onboarding_done_desc">\"%s\" বলুন বা মাইকে ট্যাপ করুন। সেটিংসে আপনার নির্বাচিত সমস্ত অপশন রয়েছে।</string>
+    <string name="onboarding_start">শুরু করুন</string>
+    <string name="onboarding_mic_title">মাইক্রোফোন</string>
+    <string name="onboarding_mic_desc">আপনার কথা শোনার জন্য প্রয়োজন। ওয়েক ওয়ার্ড ও লোকাল নির্দেশের অডিও ফোনেই থাকে; কেবল কথোপকথন চলাকালীনই জেমিনি শুনতে পায়।</string>
+    <string name="onboarding_mic_allowed">মাইক্রোফোনের অনুমতি দেওয়া হয়েছে।</string>
+    <string name="onboarding_allow_mic">মাইক্রোফোনের অনুমতি দিন</string>
+    <string name="onboarding_not_now">এখন নয়</string>
+
+    <!-- Problems and Errors -->
+    <string name="problem_stopped_quiet">৩ মিনিট নীরবতার পর শোনা বন্ধ করা হয়েছে।</string>
+    <string name="problem_mic_permission">কথা বলতে মাইক্রোফোন প্রয়োজন। অ্যাপের সেটিংসে অনুমতি দিন।</string>
+    <string name="problem_mic_busy">অন্য একটি অ্যাপ মাইক্রোফোন ব্যবহার করছে।</string>
+    <string name="problem_lost_connection">জেমিনির সাথে সংযোগ বিচ্ছিন্ন হয়েছে।</string>
+    <string name="key_err_voice_not_supported">এই কি-টি কাজ করছে, কিন্তু লাইভ ভয়েসের জন্য নয়।</string>
+    <string name="key_err_model_not_found">এই কি-র জন্য ভয়েস মডেল পাওয়া যায়নি।</string>
+    <string name="key_err_rate_limit">জেমিনির ব্যবহারের সীমা শেষ। এক মিনিট পর আবার চেষ্টা করুন।</string>
+    <string name="key_err_rejected">জেমিনি এই কি প্রত্যাখ্যান করেছে। যাচাই করে আবার চেষ্টা করুন।</string>
+    <string name="key_err_no_answer">জেমিনি উত্তর দেয়নি (%d)। আবার চেষ্টা করুন।</string>
+    <string name="key_err_no_connection">জেমিনির সাথে কোনো সংযোগ নেই। ইন্টারনেট সংযোগ পরীক্ষা করুন।</string>
+</resources>

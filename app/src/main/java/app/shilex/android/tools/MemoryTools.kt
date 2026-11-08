@@ -63,7 +63,15 @@ object MemoryTools {
         )
 
         override suspend fun run(args: JSONObject, host: ToolHost): JSONObject {
-            val gone = MemoryStore(host.context).forget(args.text("query"))
+            val query = args.text("query").trim()
+            if (query.equals("all", ignoreCase = true)) {
+                val overlay = app.shilex.android.control.ControlService.instance?.overlay?.takeUnless { it.stopped }
+                val allowed = overlay?.confirm("Forget all remembered notes") ?: false
+                if (!allowed) {
+                    return Results.failed("cancelled", "The user didn't allow forgetting all notes.")
+                }
+            }
+            val gone = MemoryStore(host.context).forget(query)
             return if (gone == 0) Results.done("No note matched; nothing deleted.") else Results.done("Deleted $gone note(s).")
         }
     }

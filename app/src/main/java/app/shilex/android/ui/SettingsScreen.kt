@@ -1,17 +1,24 @@
 package app.shilex.android.ui
 
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -19,12 +26,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.shilex.android.Branding
+import app.shilex.android.R
 import app.shilex.android.assistant.AssistantViewModel
 import app.shilex.android.data.Settings as AppSettings
 import app.shilex.android.memory.MemoryStore
@@ -51,22 +61,103 @@ fun SettingsScreen(assistant: AssistantViewModel) {
         Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 20.dp),
         verticalArrangement = Arrangement.spacedBy(20.dp),
     ) {
-        Text("Settings", style = MaterialTheme.typography.headlineSmall, modifier = Modifier.padding(top = 12.dp))
+        Text(stringResource(R.string.settings), style = MaterialTheme.typography.headlineSmall, modifier = Modifier.padding(top = 12.dp))
 
-        Section("Gemini") {
-            InfoRow("API key", "Your own key, encrypted with Android Keystore on this phone. Used only for requests the phone can't handle. Gemini usage counts against your key's limits.") {
-                TextButton(onClick = assistant::forgetKey) { Text("Replace") }
+        Section(stringResource(R.string.settings_sec_gemini)) {
+            InfoRow(stringResource(R.string.settings_api_key_title), stringResource(R.string.settings_api_key_desc)) {
+                TextButton(onClick = assistant::forgetKey) { Text(stringResource(R.string.action_replace)) }
             }
-            InfoRow("Default assistant", "Long-press Home or swipe from a corner to talk.") {
-                TextButton(onClick = { open(Settings.ACTION_MANAGE_DEFAULT_APPS_SETTINGS) }) { Text("Open") }
+            var currentModel by remember { mutableStateOf(assistant.model) }
+            var editingModel by remember { mutableStateOf(false) }
+            InfoRow(stringResource(R.string.model), stringResource(R.string.settings_model_desc, currentModel)) {
+                TextButton(onClick = { editingModel = true }) { Text(stringResource(R.string.action_change)) }
+            }
+            if (editingModel) {
+                var customModel by remember { mutableStateOf(currentModel) }
+                AlertDialog(
+                    onDismissRequest = { editingModel = false },
+                    title = { Text(stringResource(R.string.settings_model_dialog_title)) },
+                    text = {
+                        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                            Text(stringResource(R.string.settings_model_dialog_desc), style = MaterialTheme.typography.bodyMedium)
+                            AppSettings.AVAILABLE_MODELS.forEach { preset ->
+                                Row(
+                                    Modifier.fillMaxWidth().clickable { customModel = preset },
+                                    verticalAlignment = Alignment.CenterVertically,
+                                ) {
+                                    RadioButton(selected = (customModel == preset), onClick = { customModel = preset })
+                                    Text(preset, style = MaterialTheme.typography.bodyMedium)
+                                }
+                            }
+                            OutlinedTextField(
+                                value = customModel,
+                                onValueChange = { customModel = it },
+                                label = { Text(stringResource(R.string.settings_model_name_label)) },
+                                modifier = Modifier.fillMaxWidth(),
+                            )
+                        }
+                    },
+                    confirmButton = {
+                        TextButton(onClick = {
+                            val chosen = customModel.trim().ifEmpty { AppSettings.DEFAULT_MODEL }
+                            assistant.model = chosen
+                            currentModel = chosen
+                            editingModel = false
+                        }) { Text(stringResource(R.string.save)) }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { editingModel = false }) { Text(stringResource(R.string.cancel)) }
+                    },
+                )
+            }
+            InfoRow(stringResource(R.string.settings_default_assistant_title), stringResource(R.string.settings_default_assistant_desc)) {
+                TextButton(onClick = { open(Settings.ACTION_MANAGE_DEFAULT_APPS_SETTINGS) }) { Text(stringResource(R.string.action_open)) }
             }
         }
 
-        Section("Conversation") {
+        Section(stringResource(R.string.settings_sec_conversation)) {
+            var currentLang by remember { mutableStateOf(assistant.replyLanguage) }
+            var choosingLang by remember { mutableStateOf(false) }
+            InfoRow(
+                stringResource(R.string.reply_language),
+                stringResource(R.string.settings_reply_lang_desc, Branding.ASSISTANT_NAME, currentLang.replaceFirstChar { it.uppercase() }),
+            ) {
+                TextButton(onClick = { choosingLang = true }) { Text(stringResource(R.string.action_change)) }
+            }
+            if (choosingLang) {
+                AlertDialog(
+                    onDismissRequest = { choosingLang = false },
+                    title = { Text(stringResource(R.string.reply_language)) },
+                    text = {
+                        Column {
+                            AppSettings.REPLY_LANGUAGES.forEach { lang ->
+                                Row(
+                                    Modifier.fillMaxWidth().clickable {
+                                        assistant.replyLanguage = lang
+                                        currentLang = lang
+                                        choosingLang = false
+                                    },
+                                    verticalAlignment = Alignment.CenterVertically,
+                                ) {
+                                    RadioButton(selected = (currentLang == lang), onClick = {
+                                        assistant.replyLanguage = lang
+                                        currentLang = lang
+                                        choosingLang = false
+                                    })
+                                    Text(lang.replaceFirstChar { it.uppercase() }, style = MaterialTheme.typography.bodyLarge)
+                                }
+                            }
+                        }
+                    },
+                    confirmButton = {
+                        TextButton(onClick = { choosingLang = false }) { Text(stringResource(R.string.action_done)) }
+                    },
+                )
+            }
             var talkOn by remember { mutableStateOf(assistant.talkOver) }
             SwitchRow(
-                "Talk over ${Branding.ASSISTANT_NAME}",
-                "Speak while it answers to cut it off, also on the loudspeaker. An echo canceller on this phone removes its own voice first. Turn off if it cuts itself off.",
+                stringResource(R.string.settings_talk_over_title, Branding.ASSISTANT_NAME),
+                stringResource(R.string.settings_talk_over_desc),
                 talkOn,
             ) {
                 talkOn = it
@@ -74,8 +165,8 @@ fun SettingsScreen(assistant: AssistantViewModel) {
             }
             var waveOn by remember { mutableStateOf(assistant.waveToStop) }
             SwitchRow(
-                "Wave to interrupt",
-                "Wave a hand over the top of the phone while ${Branding.ASSISTANT_NAME} speaks to cut it off. With headphones you can also just talk over it.",
+                stringResource(R.string.settings_wave_title),
+                stringResource(R.string.settings_wave_desc, Branding.ASSISTANT_NAME),
                 waveOn,
             ) {
                 waveOn = it
@@ -83,7 +174,7 @@ fun SettingsScreen(assistant: AssistantViewModel) {
             }
         }
 
-        Section("Floating orb") {
+        Section(stringResource(R.string.settings_sec_orb)) {
             val prefs = remember { AppSettings(context) }
             var orbOn by remember { mutableStateOf(prefs.floatingOrb && FloatingOrb.allowed(context)) }
             LifecycleResumeEffect(Unit) {
@@ -91,9 +182,8 @@ fun SettingsScreen(assistant: AssistantViewModel) {
                 onPauseOrDispose { }
             }
             SwitchRow(
-                "Use ${Branding.ASSISTANT_NAME} over any app",
-                "A small orb floats over your apps. Tap to talk, double-tap to type, drag to move. " +
-                    "Needs \"Display over other apps\"; it hides while ${Branding.ASSISTANT_NAME} is open.",
+                stringResource(R.string.settings_orb_title, Branding.ASSISTANT_NAME),
+                stringResource(R.string.settings_orb_desc, Branding.ASSISTANT_NAME),
                 orbOn,
             ) { on ->
                 prefs.floatingOrb = on
@@ -108,27 +198,30 @@ fun SettingsScreen(assistant: AssistantViewModel) {
             }
         }
 
-        Section("Notifications") {
+        Section(stringResource(R.string.settings_sec_notifications)) {
             var notifyOn by remember { mutableStateOf(NotificationWatch.allowed(context)) }
             LifecycleResumeEffect(Unit) {
                 notifyOn = NotificationWatch.allowed(context)
                 onPauseOrDispose { }
             }
             InfoRow(
-                "What did I miss?",
-                (if (notifyOn) "On. " else "Off. ") +
-                    "Ask \"what did I miss?\" and hear messages from people first. Notifications stay in memory on this " +
-                    "phone; Gemini gets a short summary only when you ask, with codes hidden.",
+                stringResource(R.string.settings_miss_title),
+                stringResource(
+                    R.string.settings_miss_desc,
+                    if (notifyOn) stringResource(R.string.settings_state_on) else stringResource(R.string.settings_state_off),
+                ),
             ) {
-                TextButton(onClick = { open(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS) }) { Text(if (notifyOn) "Change" else "Turn on") }
+                TextButton(onClick = { open(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS) }) {
+                    Text(if (notifyOn) stringResource(R.string.action_change) else stringResource(R.string.action_turn_on))
+                }
             }
         }
 
-        Section("Wake word") {
+        Section(stringResource(R.string.wake_word)) {
             if (assistant.wakeWordAvailable) {
                 SwitchRow(
-                    "Say \"${WakeWordModel.PHRASE}\"",
-                    "Heard on this phone only. Test model: not for release builds.",
+                    stringResource(R.string.settings_wake_title, WakeWordModel.PHRASE),
+                    stringResource(R.string.settings_wake_desc),
                     wakeOn,
                 ) { assistant.setWakeWord(it) }
                 VoiceSetupRow(
@@ -138,22 +231,22 @@ fun SettingsScreen(assistant: AssistantViewModel) {
                     onForget = assistant::forgetVoice,
                 )
             } else {
-                InfoRow("Not in this build", "The wake word ships once ${Branding.ASSISTANT_NAME} has its own model.")
+                InfoRow(stringResource(R.string.settings_wake_not_build_title), stringResource(R.string.settings_wake_not_build_desc, Branding.ASSISTANT_NAME))
             }
         }
 
-        Section("Local commands") {
+        Section(stringResource(R.string.settings_sec_local)) {
             SwitchRow(
-                "Handle simple commands on the phone",
-                "Volume, music, flashlight, apps, time, timers and alarms run here, without Gemini.",
+                stringResource(R.string.settings_local_title),
+                stringResource(R.string.settings_local_desc),
                 localOn,
             ) {
                 localOn = it
                 assistant.localCommands = it
             }
             SwitchRow(
-                "Use the phone's speech service",
-                "Better Hinglish, but sends what you say after the wake word to that service (usually Google) and needs internet. Off: speech stays on this phone.",
+                stringResource(R.string.settings_network_title),
+                stringResource(R.string.settings_network_desc),
                 networkOn,
                 enabled = localOn,
             ) {
@@ -161,42 +254,44 @@ fun SettingsScreen(assistant: AssistantViewModel) {
                 assistant.networkSpeech = it
                 engine = assistant.speechEngine
             }
-            InfoRow("Speech heard by", engineText(engine))
+            InfoRow(stringResource(R.string.settings_speech_heard_title), engineText(context, engine))
         }
 
-        Section("Learning") {
+        Section(stringResource(R.string.settings_sec_learning)) {
             var learnOn by remember { mutableStateOf(assistant.learning) }
             var learned by remember { mutableStateOf(assistant.learnedSummary()) }
             SwitchRow(
-                "Learn from how I use ${Branding.ASSISTANT_NAME}",
-                "Kept only on this phone: which commands you use and when, and your own phrases once Gemini has understood them. Never contacts.",
+                stringResource(R.string.settings_learn_title, Branding.ASSISTANT_NAME),
+                stringResource(R.string.settings_learn_desc),
                 learnOn,
             ) {
                 learnOn = it
                 assistant.learning = it
             }
-            InfoRow("What it knows", learned) {
+            InfoRow(stringResource(R.string.settings_learned_title), learned) {
                 TextButton(onClick = {
                     assistant.forgetLearned()
                     learned = assistant.learnedSummary()
-                }) { Text("Forget") }
+                }) { Text(stringResource(R.string.action_forget)) }
             }
         }
 
-        Section("Permissions") {
+        Section(stringResource(R.string.settings_sec_permissions)) {
             ControlCard(Modifier.padding(vertical = 8.dp), showWhenOn = true)
-            InfoRow("Background running", if (batteryExempt) "Allowed. The phone won't stop the wake word." else "The phone may stop the wake word to save battery. Allow ${Branding.ASSISTANT_NAME} under Battery → Unrestricted.") {
-                TextButton(onClick = { open(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS) }) { Text("Open") }
+            InfoRow(
+                stringResource(R.string.settings_battery_title),
+                if (batteryExempt) stringResource(R.string.settings_battery_allowed) else stringResource(R.string.settings_battery_disallowed, Branding.ASSISTANT_NAME),
+            ) {
+                TextButton(onClick = { open(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS) }) { Text(stringResource(R.string.action_open)) }
             }
         }
 
-        Section("Privacy") {
+        Section(stringResource(R.string.settings_sec_privacy)) {
             InfoRow(
-                "What leaves the phone",
-                "The wake word and local commands stay on this phone. Gemini gets only requests the phone can't handle. " +
-                    "Nothing is recorded. The diagnostic log keeps timings and states, never your words.",
+                stringResource(R.string.settings_privacy_leaves_title),
+                stringResource(R.string.settings_privacy_leaves_desc),
             )
-            InfoRow("Standby", "Between requests only the wake word runs; Gemini is disconnected.")
+            InfoRow(stringResource(R.string.settings_standby_title), stringResource(R.string.settings_standby_desc))
             val memory = remember { MemoryStore(context) }
             var notes by remember { mutableStateOf(memory.notes().size) }
             LifecycleResumeEffect(Unit) {
@@ -204,26 +299,26 @@ fun SettingsScreen(assistant: AssistantViewModel) {
                 onPauseOrDispose { }
             }
             InfoRow(
-                "What ${Branding.ASSISTANT_NAME} remembers",
-                "$notes note(s) you asked it to remember, kept on this phone only. Gemini sees one only when you ask about it.",
+                stringResource(R.string.settings_remembers_title, Branding.ASSISTANT_NAME),
+                stringResource(R.string.settings_remembers_desc, notes),
             ) {
-                if (notes > 0) TextButton(onClick = { memory.clearNotes().also { notes = 0 } }) { Text("Forget all") }
+                if (notes > 0) TextButton(onClick = { memory.clearNotes().also { notes = 0 } }) { Text(stringResource(R.string.action_forget_all)) }
             }
         }
 
-        Section("About") {
-            InfoRow(Branding.ASSISTANT_NAME, "Version ${versionName(context)}")
+        Section(stringResource(R.string.settings_sec_about)) {
+            InfoRow(Branding.ASSISTANT_NAME, stringResource(R.string.settings_version, versionName(context)))
         }
         Spacer(Modifier.height(8.dp))
     }
 }
 
-private fun engineText(engine: String?) = when (engine) {
-    "on-device" -> "The phone's on-device recogniser. No internet needed."
-    "offline" -> "Offline model on this phone (Vosk). No internet needed; best with English words."
-    "network" -> "The phone's speech service (usually Google). Needs internet."
-    else -> "Nothing local is available, so Gemini hears every request."
+private fun engineText(context: Context, engine: String?) = when (engine) {
+    "on-device" -> context.getString(R.string.engine_on_device)
+    "offline" -> context.getString(R.string.engine_offline)
+    "network" -> context.getString(R.string.engine_network)
+    else -> context.getString(R.string.engine_none)
 }
 
-private fun versionName(context: android.content.Context): String =
+private fun versionName(context: Context): String =
     runCatching { context.packageManager.getPackageInfo(context.packageName, 0).versionName }.getOrNull() ?: "?"

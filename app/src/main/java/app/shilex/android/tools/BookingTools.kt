@@ -11,7 +11,7 @@ import kotlinx.coroutines.delay
 import org.json.JSONObject
 
 /**
- * Ticket booking. Indian ticket apps offer no public booking API, so JARVIS opens the
+ * Ticket booking. Ticket apps offer no public booking API, so JARVIS opens the
  * user's ticket app and, with phone control on, works through it on screen (movie, city,
  * date, show, seats) up to the payment step, where it stops: taps that pay are refused
  * (ControlRules.Risk.Money) and payment apps are blocked, so the user always pays. Without
@@ -20,9 +20,9 @@ import org.json.JSONObject
 object BookingTools {
     fun all(): List<PhoneTool> = listOf(BookTickets)
 
-    /** Apps tried in order, matched by their name on the phone (no guessed package names). Paytm is a
-     *  payments app, so it's only opened for the user, never controlled. */
-    private val APPS = listOf("BookMyShow", "District", "Paytm")
+    /** Apps tried in order, matched by their name on the phone (no guessed package names).
+     *  Payment apps (Paytm, bKash, etc.) are strictly excluded and never controlled. */
+    var TICKET_APPS = listOf("BookMyShow", "District", "Ticket New", "Cineplex", "Blockbuster Cinemas")
 
     /**
      * Ticket apps search in the city they're set to, so a wrong city gives the wrong cinemas.
@@ -77,8 +77,10 @@ object BookingTools {
             val request = BookingRequest(args.text("movie"), args.text("city"), args.text("date"), args.optInt("tickets", 0))
             val pm = host.context.packageManager
             val launcher = Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER)
-            val installed = pm.queryIntentActivities(launcher, 0).map { InstalledApp(it.loadLabel(pm).toString(), it.activityInfo.packageName) }
-            val app = APPS.firstNotNullOfOrNull { name -> AppMatch.find(name, installed).singleOrNull() }
+            val installed = pm.queryIntentActivities(launcher, 0)
+                .map { InstalledApp(it.loadLabel(pm).toString(), it.activityInfo.packageName) }
+                .filterNot { ControlRules.blocked(it.packageName) }
+            val app = TICKET_APPS.firstNotNullOfOrNull { name -> AppMatch.find(name, installed).singleOrNull() }
             // A fresh start on the app's home screen, not wherever an earlier booking was left.
             val intent = app?.let { pm.getLaunchIntentForPackage(it.packageName) }
                 ?.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)

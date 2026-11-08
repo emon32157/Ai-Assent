@@ -35,6 +35,10 @@ object LiveProtocol {
             )
         }
         val inputTranscription = JSONObject()
+        // Gemini Live API (BidiGenerateContent / Multimodal Live API) supports BCP-47 language codes
+        // in inputAudioTranscription.languageCodes (e.g. "en-IN", "hi-IN", "bn-BD").
+        // If omitted or empty, automatic language detection is used across supported locales.
+        // Doc checked: https://ai.google.dev/api/multimodal-live on 2026-11-08.
         if (setup.languages.isNotEmpty()) {
             inputTranscription.put("languageCodes", JSONArray(setup.languages))
         }
@@ -155,7 +159,8 @@ object LiveProtocol {
                 "Gemini rejected the key. Check it in settings."
             "quota" in lower || "exceeded" in lower || "rate" in lower ->
                 "Gemini rate limit reached. Try again in a minute."
-            "not found" in lower || "model" in lower -> "That Gemini voice model wasn't found."
+            code == 404 || "not found" in lower || "model" in lower ->
+                "That Gemini voice model wasn't found. Check the model name in Settings."
             code == 1000 -> "Gemini ended the session."
             else -> "Lost the connection to Gemini."
         }

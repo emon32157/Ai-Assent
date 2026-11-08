@@ -16,7 +16,9 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import app.shilex.android.R
 import app.shilex.android.local.ActivityLog
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -27,17 +29,17 @@ import java.util.Locale
 fun ActivityScreen(entries: List<ActivityLog.Entry>, onClear: () -> Unit) {
     Column(Modifier.fillMaxSize().padding(horizontal = 20.dp)) {
         Row(Modifier.fillMaxWidth().padding(top = 12.dp, bottom = 4.dp), verticalAlignment = Alignment.CenterVertically) {
-            Text("Activity", style = MaterialTheme.typography.headlineSmall, modifier = Modifier.weight(1f))
-            if (entries.isNotEmpty()) TextButton(onClick = onClear) { Text("Clear") }
+            Text(stringResource(R.string.activity_title), style = MaterialTheme.typography.headlineSmall, modifier = Modifier.weight(1f))
+            if (entries.isNotEmpty()) TextButton(onClick = onClear) { Text(stringResource(R.string.activity_clear)) }
         }
         Text(
-            "What was done, not what was said. Cleared when the app closes.",
+            stringResource(R.string.activity_subtitle),
             style = MaterialTheme.typography.bodySmall,
             color = Muted,
             modifier = Modifier.padding(bottom = 12.dp),
         )
         if (entries.isEmpty()) {
-            Text("Nothing yet.", style = MaterialTheme.typography.bodyMedium, color = Muted, modifier = Modifier.padding(top = 24.dp))
+            Text(stringResource(R.string.activity_empty), style = MaterialTheme.typography.bodyMedium, color = Muted, modifier = Modifier.padding(top = 24.dp))
             return
         }
         LazyColumn {
@@ -58,7 +60,11 @@ fun ActivityRow(entry: ActivityLog.Entry) {
         }
         Spacer(Modifier.width(8.dp))
         Column(horizontalAlignment = Alignment.End) {
-            Pill(if (entry.local) "On phone" else "Gemini", if (entry.local) Accent else Warning, dot = false)
+            Pill(
+                if (entry.local) stringResource(R.string.badge_on_phone) else stringResource(R.string.badge_gemini),
+                if (entry.local) Accent else Warning,
+                dot = false,
+            )
             Text(
                 SimpleDateFormat("h:mm a", Locale.ENGLISH).format(Date(entry.at)),
                 style = MaterialTheme.typography.bodySmall,

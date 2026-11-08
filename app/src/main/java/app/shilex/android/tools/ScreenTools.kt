@@ -148,6 +148,11 @@ object ScreenTools {
                 ?.takeIf { it.isEditable }
                 ?: return Results.failed("no_field", "No text field selected. Call ui_read and give the field's number.")
             if (ControlRules.blocked(field.packageName?.toString().orEmpty())) return blocked("this app")
+            val label = service.labelOf(field)
+            val hint = if (android.os.Build.VERSION.SDK_INT >= 26) field.hintText?.toString().orEmpty() else ""
+            if (ControlRules.isPasswordField(field.isPassword, label, hint, field.viewIdResourceName.orEmpty())) {
+                return Results.failed("password_field", "Entering passwords, PINs or verification codes is not allowed for safety. Hand over to the user.")
+            }
             if (!service.type(field, args.text("text"))) return Results.failed("type_failed", "Typing didn't work in that field.")
             return afterAction(service, "Typed it.")
         }

@@ -4,4 +4,271 @@
     <string name="app_name">JARVIS</string>
     <string name="control_label">Phone control (voice assistant)</string>
     <string name="control_description">Lets the assistant read what\'s on your screen and tap, type and scroll for you, only when you ask by voice. Taps that send, call, delete or pay wait for you to press Allow. It never reads banking, UPI, password or Settings apps, and doesn\'t store or upload what it reads except to answer you through Gemini.</string>
+
+    <!-- Notification strings -->
+    <string name="notif_listening_title">%s is listening</string>
+    <string name="notif_listening_text">Talk any time. It stops after 3 quiet minutes.</string>
+    <string name="notif_listening_stop">Stop</string>
+    <string name="notif_wake_title">Say \"%s\" to talk</string>
+    <string name="notif_wake_text">Heard on this phone only; nothing is sent until you say it.</string>
+    <string name="notif_wake_turn_off">Turn off</string>
+    <string name="notif_channel_listening">Listening</string>
+    <string name="notif_channel_listening_desc">Shown while %s can hear you.</string>
+    <string name="notif_channel_standby">Waiting for the wake word</string>
+    <string name="notif_channel_open_apps">Open apps</string>
+    <string name="notif_open_app_title">Open %s</string>
+    <string name="notif_open_app_text">Tap to finish what you asked.</string>
+    <string name="notif_channel_reminders">Reminders</string>
+    <string name="notif_reminder_title">%s reminder</string>
+
+    <!-- Common Actions & Labels -->
+    <string name="allow">Allow</string>
+    <string name="deny">Deny</string>
+    <string name="settings">Settings</string>
+    <string name="reply_language">Reply language</string>
+    <string name="model">Model</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="voice">Voice</string>
+    <string name="wake_word">Wake word</string>
+    <string name="home_city">City</string>
+    <string name="speech_recognition">Speech recognition</string>
+    <string name="phone_control">Phone control</string>
+    <string name="action_stop">Stop</string>
+    <string name="action_talk">Talk</string>
+    <string name="action_open">Open</string>
+    <string name="action_change">Change</string>
+    <string name="action_replace">Replace</string>
+    <string name="action_turn_on">Turn on</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_done">Done</string>
+    <string name="action_forget">Forget</string>
+    <string name="action_forget_all">Forget all</string>
+
+    <!-- Navigation Tabs -->
+    <string name="tab_home">Home</string>
+    <string name="tab_automations">Automations</string>
+    <string name="tab_activity">Activity</string>
+    <string name="tab_settings">Settings</string>
+
+    <!-- Status and Badges -->
+    <string name="status_listening">Listening</string>
+    <string name="status_working">Working</string>
+    <string name="status_speaking">Speaking</string>
+    <string name="status_thinking">Thinking</string>
+    <string name="status_standby">Standby</string>
+    <string name="status_hint_local_listening">Say a command. Simple ones run on this phone.</string>
+    <string name="status_hint_local_doing">Doing it on this phone.</string>
+    <string name="status_hint_local_speaking">Answered on this phone.</string>
+    <string name="status_hint_connecting">Connecting to Gemini…</string>
+    <string name="status_hint_gemini_listening">Talk any time, in English, Hindi, Bengali or Hinglish.</string>
+    <string name="status_hint_speaking">Tap the orb to cut in.</string>
+    <string name="status_hint_standby_wake">Say \"%s\", or tap the mic.</string>
+    <string name="status_hint_standby_tap">Tap the mic to talk.</string>
+    <string name="badge_on_phone">On phone</string>
+    <string name="badge_gemini">Gemini</string>
+    <string name="badge_wake_on">Wake word on</string>
+    <string name="badge_wake_off">Wake word off</string>
+    <string name="badge_local">Local</string>
+    <string name="badge_needs_you">Needs you</string>
+    <string name="desc_orb_status">%1$s: %2$s</string>
+
+    <!-- Quick Actions -->
+    <string name="quick_torch_off">Torch off</string>
+    <string name="quick_torch">Torch</string>
+    <string name="quick_battery">Battery</string>
+    <string name="quick_time">Time</string>
+    <string name="quick_pause">Pause</string>
+
+    <!-- Recent Activity on Home -->
+    <string name="recent_header">RECENT</string>
+    <string name="recent_see_all">See all</string>
+    <string name="recent_empty">Nothing yet. What you ask shows up here.</string>
+
+    <!-- Activity Screen -->
+    <string name="activity_title">Activity</string>
+    <string name="activity_clear">Clear</string>
+    <string name="activity_subtitle">What was done, not what was said. Cleared when the app closes.</string>
+    <string name="activity_empty">Nothing yet.</string>
+
+    <!-- Automations Screen -->
+    <string name="automations_title">Automations</string>
+    <string name="automations_subtitle">Say \"%s\", then the command. English, Hindi, Bengali and Hinglish.</string>
+    <string name="routines_title">Routines</string>
+    <string name="routines_description">Say a routine\'s name to run its steps. Make one by voice: \"make a routine called good night: alarm at 6:30, what\'s on tomorrow\".</string>
+    <string name="group_on_phone_title">On this phone</string>
+    <string name="group_on_phone_desc">Works without internet and doesn\'t use your Gemini key.</string>
+    <string name="group_tasks_title">Tasks with your OK</string>
+    <string name="group_tasks_desc">Gemini plans them; you finish anything that sends, calls or pays.</string>
+    <string name="group_cloud_title">With Gemini</string>
+    <string name="group_cloud_desc">Needs internet; uses your Gemini key.</string>
+
+    <!-- Automations Commands -->
+    <string name="cmd_volume">Volume</string>
+    <string name="cmd_volume_eg">\"Volume 30 percent kar do\" · \"volume badhao\" · \"phone mute karo\"</string>
+    <string name="cmd_music">Music</string>
+    <string name="cmd_music_eg">\"Music pause kar do\" · \"agla gaana\" · \"resume\"</string>
+    <string name="cmd_flashlight">Flashlight</string>
+    <string name="cmd_flashlight_eg">\"Flashlight on karo\" · \"torch band karo\"</string>
+    <string name="cmd_open_apps">Open apps</string>
+    <string name="cmd_open_apps_eg">\"YouTube kholo\" · \"open Calendar\" · \"Camera chalu karo\"</string>
+    <string name="cmd_time_date_battery">Time, date, battery</string>
+    <string name="cmd_time_date_battery_eg">\"Kitne baje hai?\" · \"aaj ki date\" · \"kitni battery hai\"</string>
+    <string name="cmd_timers_alarms">Timers and alarms</string>
+    <string name="cmd_timers_alarms_eg">\"5 minute ka timer\" · \"subah 6:30 ka alarm\"</string>
+    <string name="cmd_stop">Stop</string>
+    <string name="cmd_stop_eg">\"Bas\" · \"stop\" · \"never mind\"</string>
+    <string name="cmd_whatsapp">WhatsApp message</string>
+    <string name="cmd_whatsapp_eg">\"WhatsApp Rahul ko bolo main 7 baje aaunga\". Asks if several Rahuls match, opens the chat with the message; you check it and tap Send. With phone control on, it only says \"sent\" once the message shows in the chat.</string>
+    <string name="cmd_movie_tickets">Movie tickets</string>
+    <string name="cmd_movie_tickets_eg">\"Book 4 tickets for tomorrow evening\". Opens your ticket app or a web search; you pick the show and seats and pay there. It never pays or books for you.</string>
+    <string name="cmd_calls">Calls</string>
+    <string name="cmd_calls_eg">\"Call Mom\". Asks for confirmation with the number, then places the call directly or opens the dialer.</string>
+    <string name="cmd_songs">Songs</string>
+    <string name="cmd_songs_eg">\"Play Kesariya on YouTube Music\"</string>
+    <string name="cmd_screen">Your screen</string>
+    <string name="cmd_screen_eg">\"What\'s on my screen?\" · \"reply to this\" (needs phone control)</string>
+    <string name="cmd_questions">Questions</string>
+    <string name="cmd_questions_eg">Weather, facts, explanations, anything else</string>
+    <string name="cmd_reminders">Reminders</string>
+    <string name="cmd_reminders_eg">\"Remind me to call at 5\"</string>
+
+    <!-- Task Card -->
+    <string name="task_payment_you">Payment: you</string>
+    <string name="task_state_understanding">Understanding</string>
+    <string name="task_state_planning">Needs your answer</string>
+    <string name="task_state_awaiting">Awaiting your OK</string>
+    <string name="task_state_executing">Working</string>
+    <string name="task_state_waiting_you">Your turn</string>
+    <string name="task_state_completed">Done</string>
+    <string name="task_state_failed">Didn\'t work</string>
+
+    <!-- Control Card -->
+    <string name="control_card_title">Phone control</string>
+    <string name="control_card_on_desc">On. Send, call, delete and pay still wait for your Allow.</string>
+    <string name="control_card_off_title">Phone control is off</string>
+    <string name="control_card_off_desc">Turn it on so %s can read your screen and tap, type and scroll when you ask, e.g. play a song or reply in WhatsApp. Send, call, delete and pay always wait for you to tap Allow. Banking, MFS, UPI, password and Settings apps are never read.</string>
+    <string name="control_card_switch_greyed">Switch greyed out?</string>
+    <string name="control_card_restricted_hint">If the switch is grey: App info → ⋮ (top right) → Allow restricted settings, then try again.</string>
+
+    <!-- Key Form -->
+    <string name="key_form_desc">Keys are made in Google AI Studio. The free tier has usage limits; paid use is billed to your Google account. The key is checked with Google, then kept encrypted on this phone.</string>
+    <string name="key_form_link">Get a key at Google AI Studio</string>
+    <string name="key_form_label">Gemini API key</string>
+    <string name="key_form_checking">Checking with Google…</string>
+    <string name="key_form_save">Check and save</string>
+
+    <!-- Voice Setup Dialog -->
+    <string name="voice_setup_title">Teach %s your voice</string>
+    <string name="voice_setup_sample_progress">Sample %1$d of %2$d</string>
+    <string name="voice_setup_instruction">Tap Record, wait for \"Say it now\", then say \"%s\" normally.</string>
+    <string name="voice_setup_privacy">Kept only on this phone as speech features, not recordings. You can forget it any time.</string>
+    <string name="voice_setup_ready">Get ready…</string>
+    <string name="voice_setup_say_now">Say \"%s\" now</string>
+    <string name="voice_setup_got_all">Got all %d. Tap Save.</string>
+    <string name="voice_setup_got_one">Got it. Tap Record for the next one.</string>
+    <string name="voice_setup_listening">Listening…</string>
+    <string name="voice_setup_record">Record</string>
+    <string name="voice_setup_saved">Your voice is saved.</string>
+    <string name="voice_setup_not_saved">Not waking for you? Teach it your voice.</string>
+    <string name="voice_setup_redo">Redo</string>
+    <string name="voice_setup_teach">Teach my voice</string>
+
+    <!-- Settings Screen -->
+    <string name="settings_sec_gemini">Gemini</string>
+    <string name="settings_api_key_title">API key</string>
+    <string name="settings_api_key_desc">Your own key, encrypted with Android Keystore on this phone. Used only for requests the phone can\'t handle. Gemini usage counts against your key\'s limits.</string>
+    <string name="settings_model_desc">Live model used for voice conversations: %s</string>
+    <string name="settings_model_dialog_title">Gemini Live model</string>
+    <string name="settings_model_dialog_desc">Select a model or enter a custom name:</string>
+    <string name="settings_model_name_label">Model name</string>
+    <string name="settings_default_assistant_title">Default assistant</string>
+    <string name="settings_default_assistant_desc">Long-press Home or swipe from a corner to talk.</string>
+    <string name="settings_sec_conversation">Conversation</string>
+    <string name="settings_reply_lang_desc">Language %1$s replies in: %2$s</string>
+    <string name="settings_talk_over_title">Talk over %s</string>
+    <string name="settings_talk_over_desc">Speak while it answers to cut it off, also on the loudspeaker. An echo canceller on this phone removes its own voice first. Turn off if it cuts itself off.</string>
+    <string name="settings_wave_title">Wave to interrupt</string>
+    <string name="settings_wave_desc">Wave a hand over the top of the phone while %s speaks to cut it off. With headphones you can also just talk over it.</string>
+    <string name="settings_sec_orb">Floating orb</string>
+    <string name="settings_orb_title">Use %s over any app</string>
+    <string name="settings_orb_desc">A small orb floats over your apps. Tap to talk, double-tap to type, drag to move. Needs \"Display over other apps\"; it hides while %s is open.</string>
+    <string name="settings_sec_notifications">Notifications</string>
+    <string name="settings_miss_title">What did I miss?</string>
+    <string name="settings_miss_desc">%1$sAsk \"what did I miss?\" and hear messages from people first. Notifications stay in memory on this phone; Gemini gets a short summary only when you ask, with codes hidden.</string>
+    <string name="settings_state_on">On. </string>
+    <string name="settings_state_off">Off. </string>
+    <string name="settings_wake_title">Say \"%s\"</string>
+    <string name="settings_wake_desc">Heard on this phone only. Test model: not for release builds.</string>
+    <string name="settings_wake_not_build_title">Not in this build</string>
+    <string name="settings_wake_not_build_desc">The wake word ships once %s has its own model.</string>
+    <string name="settings_sec_local">Local commands</string>
+    <string name="settings_local_title">Handle simple commands on the phone</string>
+    <string name="settings_local_desc">Volume, music, flashlight, apps, time, timers and alarms run here, without Gemini.</string>
+    <string name="settings_network_title">Use the phone\'s speech service</string>
+    <string name="settings_network_desc">Better Hinglish and recognition, but sends what you say after the wake word to that service (usually Google) and needs internet. Off: speech stays on this phone.</string>
+    <string name="settings_speech_heard_title">Speech heard by</string>
+    <string name="engine_on_device">The phone\'s on-device recogniser. No internet needed.</string>
+    <string name="engine_offline">Offline model on this phone (Vosk). No internet needed; best with English words.</string>
+    <string name="engine_network">The phone\'s speech service (usually Google). Needs internet.</string>
+    <string name="engine_none">Nothing local is available, so Gemini hears every request.</string>
+    <string name="settings_sec_learning">Learning</string>
+    <string name="settings_learn_title">Learn from how I use %s</string>
+    <string name="settings_learn_desc">Kept only on this phone: which commands you use and when, and your own phrases once Gemini has understood them. Never contacts.</string>
+    <string name="settings_learned_title">What it knows</string>
+    <string name="settings_sec_permissions">Permissions</string>
+    <string name="settings_battery_title">Background running</string>
+    <string name="settings_battery_allowed">Allowed. The phone won\'t stop the wake word.</string>
+    <string name="settings_battery_disallowed">The phone may stop the wake word to save battery. Allow %s under Battery → Unrestricted.</string>
+    <string name="settings_sec_privacy">Privacy</string>
+    <string name="settings_privacy_leaves_title">What leaves the phone</string>
+    <string name="settings_privacy_leaves_desc">The wake word and local commands stay on this phone. Gemini gets only requests the phone can\'t handle. Nothing is recorded. The diagnostic log keeps timings and states, never your words.</string>
+    <string name="settings_standby_title">Standby</string>
+    <string name="settings_standby_desc">Between requests only the wake word runs; Gemini is disconnected.</string>
+    <string name="settings_remembers_title">What %s remembers</string>
+    <string name="settings_remembers_desc">%d note(s) you asked it to remember, kept on this phone only. Gemini sees one only when you ask about it.</string>
+    <string name="settings_sec_about">About</string>
+    <string name="settings_version">Version %s</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_welcome_desc">A voice assistant for your phone, in English, Hindi, Bengali and Hinglish.</string>
+    <string name="onboarding_get_started">Get started</string>
+    <string name="onboarding_key_title">Your Gemini key</string>
+    <string name="onboarding_key_desc">%s uses Google Gemini, with your own key, for anything the phone can\'t do by itself.</string>
+    <string name="onboarding_key_saved">Your key is saved and checked.</string>
+    <string name="onboarding_continue">Continue</string>
+    <string name="onboarding_where_title">What runs where</string>
+    <string name="onboarding_where_desc">Simple commands never leave the phone. The rest goes to Gemini.</string>
+    <string name="onboarding_local_title">On this phone</string>
+    <string name="onboarding_local_desc">Volume, music, flashlight, opening apps, time, battery, timers and alarms. No internet, no Gemini.</string>
+    <string name="onboarding_gemini_title">With Gemini</string>
+    <string name="onboarding_gemini_desc">Questions, calls and messages, songs by name, your screen. Needs internet and uses your key.</string>
+    <string name="onboarding_handsfree_title">Hands-free</string>
+    <string name="onboarding_handsfree_desc">Say \"%s\" instead of touching the phone. It listens on the phone only; nothing is sent until you say it.</string>
+    <string name="onboarding_wake_desc">Uses a little battery while it waits.</string>
+    <string name="onboarding_mic_first">Allow the microphone first (Settings → Permissions).</string>
+    <string name="onboarding_not_in_build">Not in this build yet.</string>
+    <string name="onboarding_control_title">Phone control (optional)</string>
+    <string name="onboarding_control_desc">Lets %s read the screen and tap for you, e.g. press Play or fill in a message. You can turn it on later in Settings.</string>
+    <string name="onboarding_skip">Skip for now</string>
+    <string name="onboarding_done_title">You\'re set</string>
+    <string name="onboarding_done_desc">Say \"%s\" or tap the mic. Settings has everything you chose here.</string>
+    <string name="onboarding_start">Start</string>
+    <string name="onboarding_mic_title">Microphone</string>
+    <string name="onboarding_mic_desc">Needed to hear you. Audio for the wake word and local commands stays on the phone; Gemini hears you only during a conversation with it.</string>
+    <string name="onboarding_mic_allowed">Microphone allowed.</string>
+    <string name="onboarding_allow_mic">Allow microphone</string>
+    <string name="onboarding_not_now">Not now</string>
+
+    <!-- Problems and Errors -->
+    <string name="problem_stopped_quiet">Stopped listening after 3 quiet minutes.</string>
+    <string name="problem_mic_permission">The microphone is needed to talk. Allow it in the app\'s settings.</string>
+    <string name="problem_mic_busy">Another app is using the microphone.</string>
+    <string name="problem_lost_connection">Lost the connection to Gemini.</string>
+    <string name="key_err_voice_not_supported">This key works, but not for live voice.</string>
+    <string name="key_err_model_not_found">The voice model wasn\'t found for this key.</string>
+    <string name="key_err_rate_limit">Gemini rate limit reached. Try again in a minute.</string>
+    <string name="key_err_rejected">Gemini rejected this key. Check it and try again.</string>
+    <string name="key_err_no_answer">Gemini didn\'t answer (%d). Try again.</string>
+    <string name="key_err_no_connection">No connection to Gemini. Check the internet and try again.</string>
 </resources>

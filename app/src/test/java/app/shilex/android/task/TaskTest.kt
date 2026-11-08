@@ -39,12 +39,21 @@ class TaskTest {
 
     @Test
     fun sendingAndPayingAreLeftToTheUser() {
-        listOf("whatsapp_send", "sms_send", "call_contact", "book_tickets").forEach {
+        listOf("whatsapp_send", "sms_send", "book_tickets").forEach {
             val cap = Capabilities.of(it)!!
             assertTrue(it, cap.risk >= Risk.High)
             assertEquals(it, Finish.User, cap.finish)
         }
         assertEquals(Risk.Financial, Capabilities.of("book_tickets")!!.risk)
+    }
+
+    @Test
+    fun callingRiskIsHighAndFinishIsPhone() {
+        listOf("call_contact", "call_confirm").forEach {
+            val cap = Capabilities.of(it)!!
+            assertEquals(Risk.High, cap.risk)
+            assertEquals(Finish.Phone, cap.finish)
+        }
     }
 
     @Test

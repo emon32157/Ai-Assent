@@ -3,6 +3,7 @@ package app.shilex.android.assistant
 import android.app.Application
 import android.content.Context
 import android.os.SystemClock
+import app.shilex.android.R
 import app.shilex.android.Diag
 import app.shilex.android.audio.MicRecorder
 import app.shilex.android.audio.TalkOver
@@ -21,6 +22,8 @@ import app.shilex.android.live.LiveClient
 import app.shilex.android.live.LiveEvent
 import app.shilex.android.learn.Habits
 import app.shilex.android.live.LiveProtocol
+import app.shilex.android.notify.CallConsent
+import app.shilex.android.notify.Replies
 import app.shilex.android.task.TaskTracker
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -114,7 +117,13 @@ class VoiceSession private constructor(private val app: Application) : LiveClien
                 _state.update { it.copy(hasKey = true, problem = null) }
                 null
             }
-            is KeyCheckResult.Problem -> result.message
+            is KeyCheckResult.Problem -> {
+                if (result.formatArg != null) {
+                    app.getString(result.messageRes, result.formatArg)
+                } else {
+                    app.getString(result.messageRes)
+                }
+            }
         }
     }
 
@@ -164,7 +173,7 @@ class VoiceSession private constructor(private val app: Application) : LiveClien
                     stop("music playing")
                 } else if (SystemClock.elapsedRealtime() - lastActivity > IDLE_MS) {
                     stop("idle for 3 minutes")
-                    _state.update { it.copy(problem = "Stopped listening after 3 quiet minutes.") }
+                    _state.update { it.copy(problem = app.getString(R.string.problem_stopped_quiet)) }
                 }
             }
         }
@@ -221,7 +230,7 @@ class VoiceSession private constructor(private val app: Application) : LiveClien
 
     fun micUnavailable() {
         stop("mic permission refused")
-        _state.update { it.copy(problem = "The microphone is needed to talk. Allow it in the app's settings.") }
+        _state.update { it.copy(problem = app.getString(R.string.problem_mic_permission)) }
     }
 
     private fun connect() {
@@ -256,7 +265,7 @@ class VoiceSession private constructor(private val app: Application) : LiveClien
                 retries = 0
                 if (!mic.start()) {
                     stop("mic busy")
-                    _state.update { it.copy(problem = "Another app is using the microphone.") }
+                    _state.update { it.copy(problem = app.getString(R.string.problem_mic_busy)) }
                     return
                 }
                 _state.update { it.copy(phase = Phase.Listening) }
@@ -278,12 +287,18 @@ class VoiceSession private constructor(private val app: Application) : LiveClien
             }
             is LiveEvent.UserText -> {
                 lastActivity = SystemClock.elapsedRealtime()
-                if (!heardUser) {
-                    Diag.i("user: speech heard")
-                    TaskTracker.heard()
+                // Consent race protection: ignore transcription received while the speaker is audible
+                val speakerAudible = speaker.isAudible()
+                if (!speakerAudible) {
+                    if (!heardUser) {
+                        Diag.i("user: speech heard")
+                        TaskTracker.heard()
+                    }
+                    heardUser = true
+                    tools.userSpoke(event.text)
+                } else {
+                    Diag.i("user: speech dropped while speaker audible (consent race guard)")
                 }
-                heardUser = true
-                tools.userSpoke(event.text)
                 _state.update { it.copy(lines = transcript.add(fromUser = true, event.text)) }
             }
             is LiveEvent.AssistantText -> if (!droppingReply) {
@@ -307,6 +322,8 @@ class VoiceSession private constructor(private val app: Application) : LiveClien
                 scope.launch {
                     while (speaker.isAudible(tailMs = 0)) delay(100)
                     wave.watch(false)
+                    Replies.readBackFinished()
+                    CallConsent.readBackFinished()
                     if (wanted && _state.value.phase == Phase.Speaking) {
                         _state.update { it.copy(phase = Phase.Listening) }
                     }
@@ -340,7 +357,7 @@ class VoiceSession private constructor(private val app: Application) : LiveClien
         } else {
             Diag.w("socket: giving up after $MAX_RETRIES retries")
             stop("connection lost")
-            _state.update { it.copy(problem = problem ?: "Lost the connection to Gemini.") }
+            _state.update { it.copy(problem = problem ?: app.getString(R.string.problem_lost_connection)) }
         }
     }
 

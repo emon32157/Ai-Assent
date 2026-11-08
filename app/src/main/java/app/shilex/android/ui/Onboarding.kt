@@ -34,9 +34,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import app.shilex.android.Branding
+import app.shilex.android.R
 import app.shilex.android.assistant.AssistantViewModel
 import app.shilex.android.assistant.Phase
 import app.shilex.android.wake.WakeWordModel
@@ -59,39 +61,39 @@ fun Onboarding(assistant: AssistantViewModel, hasKey: Boolean, onFinished: () ->
         AnimatedContent(step, label = "step", modifier = Modifier.weight(1f)) { shown ->
             Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(top = 24.dp)) {
                 when (shown) {
-                    Step.Welcome -> Page(Branding.ASSISTANT_NAME, "A voice assistant for your phone, in English, Hindi and Hinglish.") {
+                    Step.Welcome -> Page(Branding.ASSISTANT_NAME, stringResource(R.string.onboarding_welcome_desc)) {
                         Box(Modifier.fillMaxWidth().padding(vertical = 24.dp), contentAlignment = Alignment.Center) {
                             Orb(Phase.Listening, Modifier.size(180.dp))
                         }
-                        Primary("Get started", next)
+                        Primary(stringResource(R.string.onboarding_get_started), next)
                     }
-                    Step.Key -> Page("Your Gemini key", "${Branding.ASSISTANT_NAME} uses Google Gemini, with your own key, for anything the phone can't do by itself.") {
+                    Step.Key -> Page(stringResource(R.string.onboarding_key_title), stringResource(R.string.onboarding_key_desc, Branding.ASSISTANT_NAME)) {
                         if (hasKey) {
-                            Text("Your key is saved and checked.", color = Accent, style = MaterialTheme.typography.titleMedium)
+                            Text(stringResource(R.string.onboarding_key_saved), color = Accent, style = MaterialTheme.typography.titleMedium)
                             Spacer(Modifier.height(16.dp))
-                            Primary("Continue", next)
+                            Primary(stringResource(R.string.onboarding_continue), next)
                         } else {
                             KeyForm(onSave = { key -> assistant.saveKey(key).also { if (it == null) next() } })
                         }
                     }
-                    Step.LocalCloud -> Page("What runs where", "Simple commands never leave the phone. The rest goes to Gemini.") {
+                    Step.LocalCloud -> Page(stringResource(R.string.onboarding_where_title), stringResource(R.string.onboarding_where_desc)) {
                         Section(null) {
-                            InfoRow("On this phone", "Volume, music, flashlight, opening apps, time, battery, timers and alarms. No internet, no Gemini.") {
-                                Pill("Local", Accent)
+                            InfoRow(stringResource(R.string.onboarding_local_title), stringResource(R.string.onboarding_local_desc)) {
+                                Pill(stringResource(R.string.badge_local), Accent)
                             }
-                            InfoRow("With Gemini", "Questions, calls and messages, songs by name, your screen. Needs internet and uses your key.") {
-                                Pill("Gemini", Warning)
+                            InfoRow(stringResource(R.string.onboarding_gemini_title), stringResource(R.string.onboarding_gemini_desc)) {
+                                Pill(stringResource(R.string.badge_gemini), Warning)
                             }
                         }
                         Spacer(Modifier.height(24.dp))
-                        Primary("Continue", next)
+                        Primary(stringResource(R.string.onboarding_continue), next)
                     }
                     Step.Mic -> MicStep(next)
-                    Step.Wake -> Page("Hands-free", "Say \"${WakeWordModel.PHRASE}\" instead of touching the phone. It listens on the phone only; nothing is sent until you say it.") {
+                    Step.Wake -> Page(stringResource(R.string.onboarding_handsfree_title), stringResource(R.string.onboarding_handsfree_desc, WakeWordModel.PHRASE)) {
                         if (assistant.wakeWordAvailable && micAllowed()) {
                             var on by remember { mutableStateOf(assistant.wakeWordOn) }
                             Section(null) {
-                                SwitchRow("Wake word", "Uses a little battery while it waits.", on) {
+                                SwitchRow(stringResource(R.string.wake_word), stringResource(R.string.onboarding_wake_desc), on) {
                                     on = it
                                     assistant.setWakeWord(it)
                                 }
@@ -99,22 +101,22 @@ fun Onboarding(assistant: AssistantViewModel, hasKey: Boolean, onFinished: () ->
                             }
                         } else {
                             Text(
-                                if (assistant.wakeWordAvailable) "Allow the microphone first (Settings → Permissions)." else "Not in this build yet.",
+                                if (assistant.wakeWordAvailable) stringResource(R.string.onboarding_mic_first) else stringResource(R.string.onboarding_not_in_build),
                                 color = Muted,
                             )
                         }
                         Spacer(Modifier.height(24.dp))
-                        Primary("Continue", next)
+                        Primary(stringResource(R.string.onboarding_continue), next)
                     }
-                    Step.Control -> Page("Phone control (optional)", "Lets ${Branding.ASSISTANT_NAME} read the screen and tap for you, e.g. press Play or fill in a message. You can turn it on later in Settings.") {
+                    Step.Control -> Page(stringResource(R.string.onboarding_control_title), stringResource(R.string.onboarding_control_desc, Branding.ASSISTANT_NAME)) {
                         ControlCard(showWhenOn = true)
                         Spacer(Modifier.height(24.dp))
-                        Primary("Continue", next)
-                        TextButton(onClick = next, modifier = Modifier.fillMaxWidth()) { Text("Skip for now") }
+                        Primary(stringResource(R.string.onboarding_continue), next)
+                        TextButton(onClick = next, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.onboarding_skip)) }
                     }
-                    Step.Done -> Page("You're set", "Say \"${WakeWordModel.PHRASE}\" or tap the mic. Settings has everything you chose here.") {
+                    Step.Done -> Page(stringResource(R.string.onboarding_done_title), stringResource(R.string.onboarding_done_desc, WakeWordModel.PHRASE)) {
                         Spacer(Modifier.height(16.dp))
-                        Primary("Start", onFinished)
+                        Primary(stringResource(R.string.onboarding_start), onFinished)
                     }
                 }
             }
@@ -127,14 +129,14 @@ private fun MicStep(next: () -> Unit) {
     var allowed by remember { mutableStateOf(false) }
     val ask = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { allowed = it }
     val already = micAllowed()
-    Page("Microphone", "Needed to hear you. Audio for the wake word and local commands stays on the phone; Gemini hears you only during a conversation with it.") {
+    Page(stringResource(R.string.onboarding_mic_title), stringResource(R.string.onboarding_mic_desc)) {
         if (already || allowed) {
-            Text("Microphone allowed.", color = Accent, style = MaterialTheme.typography.titleMedium)
+            Text(stringResource(R.string.onboarding_mic_allowed), color = Accent, style = MaterialTheme.typography.titleMedium)
             Spacer(Modifier.height(16.dp))
-            Primary("Continue", next)
+            Primary(stringResource(R.string.onboarding_continue), next)
         } else {
-            Primary("Allow microphone") { ask.launch(Manifest.permission.RECORD_AUDIO) }
-            TextButton(onClick = next, modifier = Modifier.fillMaxWidth()) { Text("Not now") }
+            Primary(stringResource(R.string.onboarding_allow_mic)) { ask.launch(Manifest.permission.RECORD_AUDIO) }
+            TextButton(onClick = next, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.onboarding_not_now)) }
         }
     }
 }

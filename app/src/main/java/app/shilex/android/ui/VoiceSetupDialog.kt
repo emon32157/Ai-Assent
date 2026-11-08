@@ -17,8 +17,11 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import app.shilex.android.R
 import app.shilex.android.wake.VoiceProfile
 import app.shilex.android.wake.VoiceSetup
 import app.shilex.android.wake.WakeWordModel
@@ -31,21 +34,25 @@ fun VoiceSetupDialog(
     onSave: (List<FloatArray>) -> Unit,
     onDismiss: () -> Unit,
 ) {
+    val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val samples = remember { mutableStateListOf<FloatArray>() }
-    var status by remember { mutableStateOf("Tap Record, wait for \"Say it now\", then say \"${WakeWordModel.PHRASE}\" normally.") }
+    var status by remember { mutableStateOf(context.getString(R.string.voice_setup_instruction, WakeWordModel.PHRASE)) }
     var busy by remember { mutableStateOf(false) }
     val done = samples.size >= VoiceProfile.SAMPLES
 
     AlertDialog(
         onDismissRequest = { if (!busy) onDismiss() },
-        title = { Text("Teach ${WakeWordModel.PHRASE} your voice") },
+        title = { Text(stringResource(R.string.voice_setup_title, WakeWordModel.PHRASE)) },
         text = {
             Column {
-                Text("Sample ${minOf(samples.size + 1, VoiceProfile.SAMPLES)} of ${VoiceProfile.SAMPLES}", color = Accent)
+                Text(
+                    stringResource(R.string.voice_setup_sample_progress, minOf(samples.size + 1, VoiceProfile.SAMPLES), VoiceProfile.SAMPLES),
+                    color = Accent,
+                )
                 Text(status, modifier = Modifier.padding(top = 8.dp))
                 Text(
-                    "Kept only on this phone as speech features, not recordings. You can forget it any time.",
+                    stringResource(R.string.voice_setup_privacy),
                     color = Muted,
                     modifier = Modifier.padding(top = 12.dp),
                 )
@@ -56,31 +63,31 @@ fun VoiceSetupDialog(
                 Button(onClick = {
                     onSave(samples.toList())
                     onDismiss()
-                }) { Text("Save") }
+                }) { Text(stringResource(R.string.save)) }
             } else {
                 Button(enabled = !busy, onClick = {
                     busy = true
-                    status = "Get ready…"
+                    status = context.getString(R.string.voice_setup_ready)
                     scope.launch {
-                        val sample = record { status = "Say \"${WakeWordModel.PHRASE}\" now" }
+                        val sample = record { status = context.getString(R.string.voice_setup_say_now, WakeWordModel.PHRASE) }
                         busy = false
                         status = when (sample) {
                             is VoiceSetup.Sample.Ok -> {
                                 samples += sample.window
                                 if (samples.size >= VoiceProfile.SAMPLES) {
-                                    "Got all ${VoiceProfile.SAMPLES}. Tap Save."
+                                    context.getString(R.string.voice_setup_got_all, VoiceProfile.SAMPLES)
                                 } else {
-                                    "Got it. Tap Record for the next one."
+                                    context.getString(R.string.voice_setup_got_one)
                                 }
                             }
                             is VoiceSetup.Sample.Problem -> sample.message
                         }
                     }
-                }) { Text(if (busy) "Listening…" else "Record") }
+                }) { Text(if (busy) stringResource(R.string.voice_setup_listening) else stringResource(R.string.voice_setup_record)) }
             }
         },
         dismissButton = {
-            TextButton(enabled = !busy, onClick = onDismiss) { Text("Cancel") }
+            TextButton(enabled = !busy, onClick = onDismiss) { Text(stringResource(R.string.cancel)) }
         },
     )
 }
@@ -97,17 +104,19 @@ fun VoiceSetupRow(
     var open by remember { mutableStateOf(false) }
     Row(Modifier.fillMaxWidth().padding(bottom = 8.dp), verticalAlignment = Alignment.CenterVertically) {
         Text(
-            if (hasVoice) "Your voice is saved." else "Not waking for you? Teach it your voice.",
+            if (hasVoice) stringResource(R.string.voice_setup_saved) else stringResource(R.string.voice_setup_not_saved),
             color = Muted,
             fontSize = 13.sp,
             modifier = Modifier.weight(1f),
         )
-        TextButton(onClick = { open = true }) { Text(if (hasVoice) "Redo" else "Teach my voice", color = Accent) }
+        TextButton(onClick = { open = true }) {
+            Text(if (hasVoice) stringResource(R.string.voice_setup_redo) else stringResource(R.string.voice_setup_teach), color = Accent)
+        }
         if (hasVoice) {
             TextButton(onClick = {
                 onForget()
                 hasVoice = false
-            }) { Text("Forget", color = Muted) }
+            }) { Text(stringResource(R.string.action_forget), color = Muted) }
         }
     }
     if (open) {

@@ -11,6 +11,7 @@ analytics, no crash reports, no usage data.
 - Notifications it reads for "what did I miss?" and "watch my messages": **in memory only**,
   at most the last 12 hours, gone when the app stops.
 - A diagnostic log on the phone with timings and states, **never your words**.
+- An activity log of actions taken (e.g. "call confirmed, placed", "call refused", "dialer opened"), **never your words or phone numbers**, cleared when the app closes.
 
 ## What goes to Google (Gemini), and when
 
@@ -34,6 +35,6 @@ Google may use it to improve its products; with billing turned on it says it doe
 ## Permissions
 
 Every permission is asked only when a feature first needs it, and each can be refused:
-microphone (talking), contacts (calls and messages), calendar, notifications access, display
+microphone (talking), contacts (calls and messages), phone calls (hands-free calling after confirmation), calendar, notifications access, display
 over other apps (the floating orb), Accessibility (phone control). You can turn any of them
 off in Android Settings at any time; uninstalling JARVIS deletes everything it kept.

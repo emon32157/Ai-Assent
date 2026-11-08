@@ -33,11 +33,18 @@ object Triage {
     )
     private val NO_REPLY = Regex("""\bno.?reply\b|\bnotifications?@|\bnewsletter""", RegexOption.IGNORE_CASE)
     private val CALL_APPS = setOf("com.android.phone", "com.google.android.dialer", "com.samsung.android.dialer", "com.android.server.telecom")
-    private val CODE = Regex("""\b(otp|one[- ]time|verification|passcode|security code|login code|code is)\b""", RegexOption.IGNORE_CASE)
+    private val CODE = Regex(
+        """\b(otp|one[- ]time|verification|passcode|security code|login code|code is|pin)\b|ওটিপি|ভেরিফিকেশন|যাচাইকরণ কোড|গোপন কোড|কোড হলো|কোড হল|পিন|পাসকোড|নিরাপত্তা কোড""",
+        RegexOption.IGNORE_CASE,
+    )
+    private val MFS = Regex(
+        """\b(bkash|nagad|rocket|upay|mfs|cellfin|nexuspay|dbbl)\b|বিকাশ|নগদ|রকেট|উপায়|উপায়|সেলফিন""",
+        RegexOption.IGNORE_CASE,
+    )
     private val DIGITS = Regex("""\b\d{4,8}\b""")
     private val LINK = Regex("""https?://|www\.|\b[a-z0-9-]+\.(ly|link|xyz|top|click|in|com)/""", RegexOption.IGNORE_CASE)
     private val PROMO = Regex(
-        """\b(offer|sale|% ?off|cashback|discount|deal|coupon|free delivery|subscribe|newsletter|limited time|unsubscribe)\b""",
+        """\b(offer|sale|% ?off|cashback|discount|deal|coupon|free delivery|subscribe|newsletter|limited time|unsubscribe)\b|অফার|ছাড়|ক্যাশব্যাক|ডিসকাউন্ট|ডিল|কুপন|ফ্রি ডেলিভারি|সাবস্ক্রাইব""",
         RegexOption.IGNORE_CASE,
     )
     private val PHONE_NUMBER = Regex("""^[+\d][\d\s()-]{6,}$""")
@@ -53,8 +60,11 @@ object Triage {
     fun classify(n: Seen): Item {
         val who = n.title.ifBlank { n.app }
         val body = "${n.title} ${n.text}"
+        val isMfsSecurity = (MFS.containsMatchIn(body) || MFS.containsMatchIn(n.app) || MFS.containsMatchIn(n.packageName)) &&
+            CODE.containsMatchIn(body) && DIGITS.containsMatchIn(body)
         return when {
-            CODE.containsMatchIn(body) && DIGITS.containsMatchIn(body) -> Item(Kind.Code, "A verification code from ${n.app} (digits hidden).")
+            (CODE.containsMatchIn(body) && DIGITS.containsMatchIn(body)) || isMfsSecurity ->
+                Item(Kind.Code, "A verification code from ${n.app} (digits hidden).")
             LINK.containsMatchIn(n.text) && unknownSender(n) -> Item(Kind.Suspicious, "${who} (${n.app}, not a saved contact) sent a link.")
             n.group || n.category == "promo" || PROMO.containsMatchIn(body) -> Item(Kind.Quiet, n.app)
             n.packageName in MAIL_APPS || n.category == "email" ->

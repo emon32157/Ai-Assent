@@ -31,5 +31,18 @@ object ActivityLog {
         else -> "Didn't work."
     }
 
+    /** Formats specific outcomes for sensitive/special tools without exposing user data. */
+    fun outcomeFor(tool: String, status: String, code: String, msg: String): String = when (tool) {
+        "call_confirm" -> when {
+            status == "done" && msg.contains("Emergency") -> "dialer opened"
+            status == "done" && msg.contains("not granted") -> "dialer opened"
+            status == "done" -> "call confirmed, placed"
+            code == "refused" || status == "failed" -> "call refused"
+            else -> "call refused"
+        }
+        "call_contact" -> "asked confirmation"
+        else -> statusLabel(status)
+    }
+
     private const val LIMIT = 50
 }

@@ -69,7 +69,7 @@ object InfoTools {
     }
 }
 
-/** Open-Meteo, the same free source as desktop (non-commercial; see docs/PROVENANCE.md). */
+/** Open-Meteo, free open-access weather API (non-commercial). */
 object Weather {
     private val CODES = mapOf(
         0 to "clear", 1 to "mostly clear", 2 to "partly cloudy", 3 to "cloudy", 45 to "foggy", 48 to "foggy",

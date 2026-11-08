@@ -18,7 +18,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import app.shilex.android.R
 import app.shilex.android.task.Risk
 import app.shilex.android.task.Task
 import app.shilex.android.task.TaskState
@@ -26,7 +28,7 @@ import app.shilex.android.task.TaskState
 /** The task in progress: its steps as they really happened, and what is true now. */
 @Composable
 fun TaskCard(task: Task, modifier: Modifier = Modifier) {
-    val (label, color) = stateLabel(task.state)
+    val (labelRes, color) = stateLabel(task.state)
     Column(
         modifier
             .fillMaxWidth()
@@ -38,8 +40,15 @@ fun TaskCard(task: Task, modifier: Modifier = Modifier) {
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(task.title, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
-            if (task.risk >= Risk.High) Pill(if (task.risk == Risk.Financial) "Payment: you" else "Needs you", Warning, Modifier.padding(end = 6.dp), dot = false)
-            Pill(label, color)
+            if (task.risk >= Risk.High) {
+                Pill(
+                    if (task.risk == Risk.Financial) stringResource(R.string.task_payment_you) else stringResource(R.string.badge_needs_you),
+                    Warning,
+                    Modifier.padding(end = 6.dp),
+                    dot = false,
+                )
+            }
+            Pill(stringResource(labelRes), color)
         }
         task.steps.forEachIndexed { i, step ->
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -70,12 +79,12 @@ private fun StepMark(done: Boolean?) {
 }
 
 @Composable
-private fun stateLabel(state: TaskState): Pair<String, Color> = when (state) {
-    TaskState.Understanding -> "Understanding" to Accent
-    TaskState.Planning -> "Needs your answer" to Warning
-    TaskState.AwaitingConfirmation -> "Awaiting your OK" to Warning
-    TaskState.Executing -> "Working" to Accent
-    TaskState.WaitingForYou -> "Your turn" to Warning
-    TaskState.Completed -> "Done" to Accent
-    TaskState.Failed -> "Didn't work" to MaterialTheme.colorScheme.error
+private fun stateLabel(state: TaskState): Pair<Int, Color> = when (state) {
+    TaskState.Understanding -> R.string.task_state_understanding to Accent
+    TaskState.Planning -> R.string.task_state_planning to Warning
+    TaskState.AwaitingConfirmation -> R.string.task_state_awaiting to Warning
+    TaskState.Executing -> R.string.task_state_executing to Accent
+    TaskState.WaitingForYou -> R.string.task_state_waiting_you to Warning
+    TaskState.Completed -> R.string.task_state_completed to Accent
+    TaskState.Failed -> R.string.task_state_failed to MaterialTheme.colorScheme.error
 }

@@ -10,12 +10,13 @@ API key**: no account, no subscription, no other AI app needed.
 ## What it can do
 
 - **Talk:** tap the floating orb over any app (or open JARVIS) and speak; double-tap to type.
+  Supports English, Hindi, Hinglish and Bengali (বাংলা).
   Interrupt it any time by talking over it or waving a hand over the phone.
 - **Your messages:** "What did I miss?" (people first, codes hidden, scam links flagged),
   "keep an eye on my messages" (it says only *who* messaged, never *what*), and hands-free
-  replies: it reads your reply back and sends only after **you** say "yes" / "haan".
-- **Calls, WhatsApp, SMS, email:** opens the right app with everything filled in; you tap
-  Send or Call.
+  replies: it reads your reply back and sends only after **you** say "yes" / "haan" / "হ্যাঁ".
+- **Calls:** asks confirmation ("Call <name> on <number>?") and places the call hands-free when you say yes (with CALL_PHONE permission), or opens the dialer for emergency/special numbers or if call permission isn't granted. Logged as "call confirmed, placed", "call refused", or "dialer opened" (never user speech or numbers).
+- **WhatsApp, SMS, email:** opens the right app with everything filled in; you tap Send.
 - **Calendar:** "what's on today?", "add a meeting tomorrow at 4" (you tap Save).
 - **Memory and routines:** "remember I parked on level 2", "good morning" (time, weather,
   messages, calendar), or make your own routine by voice.

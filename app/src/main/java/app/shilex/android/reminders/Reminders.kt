@@ -24,7 +24,9 @@ class Reminders(private val context: Context) {
     fun all(): List<Reminder> = ReminderRules.decode(prefs.getString(KEY, null))
 
     fun add(text: String, at: LocalDateTime): Reminder {
-        val reminder = Reminder(System.currentTimeMillis(), text, at)
+        val zone = ZoneId.systemDefault()
+        val epoch = at.atZone(zone).toInstant().toEpochMilli()
+        val reminder = Reminder(System.currentTimeMillis(), text, at, epoch, zone.id)
         save(all() + reminder)
         schedule(reminder)
         return reminder
@@ -35,14 +37,14 @@ class Reminders(private val context: Context) {
         save(all().filterNot { it.id == reminder.id })
     }
 
-    /** After a reboot alarms are gone; set them again (overdue ones fire now). */
+    /** After reboot or clock/timezone changes, set alarms again. */
     fun rescheduleAll() = all().forEach(::schedule)
 
     /** True if reminders will ring on time; otherwise Android may delay them a few minutes. */
     fun exact(): Boolean = Build.VERSION.SDK_INT < Build.VERSION_CODES.S || alarms.canScheduleExactAlarms()
 
     private fun schedule(reminder: Reminder) {
-        val millis = reminder.at.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+        val millis = reminder.epochMillis
         if (exact()) {
             alarms.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, millis, pending(reminder.id))
         } else {
@@ -55,14 +57,14 @@ class Reminders(private val context: Context) {
         save(all().filterNot { it.id == id })
         val manager = context.getSystemService(NotificationManager::class.java)
         manager.createNotificationChannel(
-            NotificationChannel(CHANNEL, "Reminders", NotificationManager.IMPORTANCE_HIGH),
+            NotificationChannel(CHANNEL, context.getString(R.string.notif_channel_reminders), NotificationManager.IMPORTANCE_HIGH),
         )
         val open = PendingIntent.getActivity(
             context, 0, Intent(context, MainActivity::class.java), PendingIntent.FLAG_IMMUTABLE,
         )
         val notification = NotificationCompat.Builder(context, CHANNEL)
             .setSmallIcon(R.drawable.ic_notification)
-            .setContentTitle("${Branding.ASSISTANT_NAME} reminder")
+            .setContentTitle(context.getString(R.string.notif_reminder_title, Branding.ASSISTANT_NAME))
             .setContentText(reminder.text)
             .setStyle(NotificationCompat.BigTextStyle().bigText(reminder.text))
             .setCategory(NotificationCompat.CATEGORY_REMINDER)
@@ -98,7 +100,14 @@ class Reminders(private val context: Context) {
 
     class BootReceiver : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            if (intent.action == Intent.ACTION_BOOT_COMPLETED) Reminders(context).rescheduleAll()
+            when (intent.action) {
+                Intent.ACTION_BOOT_COMPLETED,
+                Intent.ACTION_TIME_CHANGED,
+                Intent.ACTION_TIMEZONE_CHANGED,
+                "android.intent.action.TIME_SET" -> {
+                    Reminders(context).rescheduleAll()
+                }
+            }
         }
     }
 }

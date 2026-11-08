@@ -37,6 +37,19 @@ class LiveProtocolTest {
     }
 
     @Test
+    fun setupSupportsBengaliAndAutoDetection() {
+        val bengaliSetup = setup.copy(languages = listOf("en-IN", "hi-IN", "bn-BD"))
+        val bengaliBody = JSONObject(LiveProtocol.setupMessage(bengaliSetup)).getJSONObject("setup")
+        val codes = bengaliBody.getJSONObject("inputAudioTranscription").getJSONArray("languageCodes")
+        assertEquals(3, codes.length())
+        assertEquals("bn-BD", codes.getString(2))
+
+        val emptySetup = setup.copy(languages = emptyList())
+        val emptyBody = JSONObject(LiveProtocol.setupMessage(emptySetup)).getJSONObject("setup")
+        assertFalse(emptyBody.getJSONObject("inputAudioTranscription").has("languageCodes"))
+    }
+
+    @Test
     fun setupCarriesResumeHandle() {
         val body = JSONObject(LiveProtocol.setupMessage(setup.copy(resumeHandle = "abc"))).getJSONObject("setup")
         assertEquals("abc", body.getJSONObject("sessionResumption").getString("handle"))

@@ -23,10 +23,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import app.shilex.android.Branding
+import app.shilex.android.R
 import app.shilex.android.control.ControlService
 
 /**
@@ -43,10 +45,10 @@ fun ControlCard(modifier: Modifier = Modifier, showWhenOn: Boolean = false) {
     }
     if (enabled) {
         if (showWhenOn) {
-            InfoRow("Phone control", "On. Send, call, delete and pay still wait for your Allow.") {
+            InfoRow(stringResource(R.string.control_card_title), stringResource(R.string.control_card_on_desc)) {
                 TextButton(onClick = {
                     context.startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
-                }) { Text("Open") }
+                }) { Text(stringResource(R.string.action_open)) }
             }
         }
         return
@@ -58,11 +60,9 @@ fun ControlCard(modifier: Modifier = Modifier, showWhenOn: Boolean = false) {
             .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f), RoundedCornerShape(16.dp))
             .padding(12.dp),
     ) {
-        Text("Phone control is off", color = Accent, fontSize = 15.sp)
+        Text(stringResource(R.string.control_card_off_title), color = Accent, fontSize = 15.sp)
         Text(
-            "Turn it on so ${Branding.ASSISTANT_NAME} can read your screen and tap, type and scroll " +
-                "when you ask, e.g. play a song or reply in WhatsApp. Send, call, delete and pay " +
-                "always wait for you to tap Allow. Banking, UPI, password and Settings apps are never read.",
+            stringResource(R.string.control_card_off_desc, Branding.ASSISTANT_NAME),
             color = Muted,
             fontSize = 13.sp,
             modifier = Modifier.padding(vertical = 6.dp),
@@ -70,7 +70,7 @@ fun ControlCard(modifier: Modifier = Modifier, showWhenOn: Boolean = false) {
         Row {
             Button(onClick = {
                 context.startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
-            }) { Text("Turn on") }
+            }) { Text(stringResource(R.string.action_turn_on)) }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 // Sideloaded apps: Android greys the switch out until "Allow restricted settings".
                 TextButton(onClick = {
@@ -78,12 +78,12 @@ fun ControlCard(modifier: Modifier = Modifier, showWhenOn: Boolean = false) {
                         Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", context.packageName, null))
                             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
                     )
-                }) { Text("Switch greyed out?", color = Muted) }
+                }) { Text(stringResource(R.string.control_card_switch_greyed), color = Muted) }
             }
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             Text(
-                "If the switch is grey: App info → ⋮ (top right) → Allow restricted settings, then try again.",
+                stringResource(R.string.control_card_restricted_hint),
                 color = Muted,
                 fontSize = 12.sp,
             )

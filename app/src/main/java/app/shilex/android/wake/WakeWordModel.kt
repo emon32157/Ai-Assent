@@ -13,7 +13,7 @@ import java.nio.FloatBuffer
  * wake-word score (0..1). Nothing leaves the phone.
  *
  * The models live in the debug build's assets only: the pretrained "hey jarvis" model is
- * CC BY-NC-SA 4.0 (non-commercial), so it must not ship in a release (docs/ANDROID.md).
+ * CC BY-NC-SA 4.0 (non-commercial), so it must not ship in a release.
  */
 class WakeWordModel(context: Context) : AutoCloseable {
     private val env = OrtEnvironment.getEnvironment()

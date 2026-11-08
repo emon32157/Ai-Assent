@@ -20,9 +20,11 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import app.shilex.android.R
 import kotlinx.coroutines.launch
 
 /** The user's own Gemini key, checked with Google before it's saved. */
@@ -36,19 +38,18 @@ fun KeyForm(onSave: suspend (String) -> String?) {
 
     Column {
         Text(
-            "Keys are made in Google AI Studio. The free tier has usage limits; paid use is billed to your Google account. " +
-                "The key is checked with Google, then kept encrypted on this phone.",
+            stringResource(R.string.key_form_desc),
             style = MaterialTheme.typography.bodyMedium,
             color = Muted,
         )
         TextButton(onClick = {
             context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(KEY_PAGE)))
-        }) { Text("Get a key at Google AI Studio") }
+        }) { Text(stringResource(R.string.key_form_link)) }
         Spacer(Modifier.height(4.dp))
         OutlinedTextField(
             value = key,
             onValueChange = { key = it; problem = null },
-            label = { Text("Gemini API key") },
+            label = { Text(stringResource(R.string.key_form_label)) },
             singleLine = true,
             visualTransformation = PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
@@ -69,7 +70,7 @@ fun KeyForm(onSave: suspend (String) -> String?) {
                 }
             },
             modifier = Modifier.fillMaxWidth().height(52.dp),
-        ) { Text(if (checking) "Checking with Google…" else "Check and save") }
+        ) { Text(if (checking) stringResource(R.string.key_form_checking) else stringResource(R.string.key_form_save)) }
     }
 }
 

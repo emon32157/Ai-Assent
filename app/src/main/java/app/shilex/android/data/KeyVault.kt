@@ -18,17 +18,25 @@ class KeyVault(context: Context) {
     private val prefs = context.getSharedPreferences("vault", Context.MODE_PRIVATE)
 
     fun read(name: String): String? {
-        val stored = prefs.getString(name, null) ?: return null
-        // A key that can't be decrypted (e.g. the Keystore was reset) counts as missing.
-        return runCatching { decrypt(stored) }.getOrNull()
+        if (prefs.getBoolean("removed_$name", false)) return null
+        val stored = prefs.getString(name, null)
+        val decrypted = if (stored != null) runCatching { decrypt(stored) }.getOrNull() else null
+        if (!decrypted.isNullOrBlank()) return decrypted
+        if (name == GEMINI_KEY) {
+            val configKey = runCatching { app.shilex.android.BuildConfig.GEMINI_API_KEY }.getOrNull()
+            if (!configKey.isNullOrBlank() && configKey != "your_api_key_here") {
+                return configKey
+            }
+        }
+        return null
     }
 
     fun write(name: String, value: String) {
-        prefs.edit().putString(name, encrypt(value)).apply()
+        prefs.edit().putString(name, encrypt(value)).remove("removed_$name").apply()
     }
 
     fun remove(name: String) {
-        prefs.edit().remove(name).apply()
+        prefs.edit().remove(name).putBoolean("removed_$name", true).apply()
     }
 
     private fun encrypt(plain: String): String {

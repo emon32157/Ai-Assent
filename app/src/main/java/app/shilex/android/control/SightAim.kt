@@ -22,7 +22,11 @@ import java.io.ByteArrayOutputStream
  * target, then repeats with a finer grid on the cells around it. The screenshot goes to
  * Gemini only for this request and is never stored or logged.
  */
-class SightAim(private val http: OkHttpClient, private val apiKey: String) {
+class SightAim(
+    private val http: OkHttpClient,
+    private val apiKey: String,
+    private val model: String = app.shilex.android.data.Settings.SIGHT_AIM_MODEL,
+) {
     sealed interface Outcome {
         data class Found(val x: Float, val y: Float, val sees: String) : Outcome
         data object NotFound : Outcome
@@ -51,7 +55,7 @@ class SightAim(private val http: OkHttpClient, private val apiKey: String) {
             .put("contents", JSONArray().put(JSONObject().put("role", "user").put("parts", parts)))
             .put("generationConfig", JSONObject().put("responseMimeType", "application/json").put("temperature", 0))
         val request = Request.Builder()
-            .url("$ENDPOINT/$MODEL:generateContent")
+            .url("$ENDPOINT/$model:generateContent")
             .header("x-goog-api-key", apiKey)
             .post(body.toString().toRequestBody("application/json".toMediaType()))
             .build()
@@ -95,7 +99,6 @@ class SightAim(private val http: OkHttpClient, private val apiKey: String) {
 
     private companion object {
         const val ENDPOINT = "https://generativelanguage.googleapis.com/v1beta/models"
-        const val MODEL = "gemini-flash-latest"
         const val MAX_SIDE = 1024f
         const val LABEL_PX = 22f
         const val FAILED = "Gemini couldn't look at the screen just now."

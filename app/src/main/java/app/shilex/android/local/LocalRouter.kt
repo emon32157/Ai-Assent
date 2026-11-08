@@ -31,7 +31,10 @@ object LocalRouter {
     /** The first recogniser alternative that matches wins. */
     fun match(alternatives: List<String>): LocalCommand? = alternatives.firstNotNullOfOrNull { match(it) }
 
+    fun isBengali(text: String): Boolean = text.any { it in '\u0980'..'\u09FF' }
+
     fun match(text: String): LocalCommand? {
+        if (isBengali(text)) return null
         val s = normalize(text)
         if (s.isEmpty()) return null
         if (MORE.containsMatchIn(s)) return null // several requests or a message: Gemini's job

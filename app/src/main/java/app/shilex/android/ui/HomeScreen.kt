@@ -1,6 +1,7 @@
 package app.shilex.android.ui
 
 import android.Manifest
+import android.content.Context
 import android.content.pm.PackageManager
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -40,11 +41,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import app.shilex.android.Branding
+import app.shilex.android.R
 import app.shilex.android.assistant.Line
 import app.shilex.android.assistant.Phase
 import app.shilex.android.assistant.UiState
@@ -59,17 +62,53 @@ import app.shilex.android.wake.WakeWordModel
 /** What the assistant is doing, in words and a colour, from the session and the local turn. */
 private data class Status(val title: String, val hint: String, val badge: String, val orb: Phase, val live: Boolean)
 
-private fun status(state: UiState, local: LocalPhase, wakeOn: Boolean): Status = when {
-    local == LocalPhase.Listening -> Status("Listening", "Say a command. Simple ones run on this phone.", "On phone", Phase.Listening, true)
-    local == LocalPhase.Doing -> Status("Working", "Doing it on this phone.", "On phone", Phase.Connecting, true)
-    local == LocalPhase.Speaking -> Status("Speaking", "Answered on this phone.", "On phone", Phase.Speaking, true)
-    state.phase == Phase.Connecting -> Status("Thinking", "Connecting to Gemini…", "Gemini", Phase.Connecting, true)
-    state.phase == Phase.Listening -> Status("Listening", "Talk any time, in English, Hindi or Hinglish.", "Gemini", Phase.Listening, true)
-    state.phase == Phase.Speaking -> Status("Speaking", "Tap the orb to cut in.", "Gemini", Phase.Speaking, true)
+private fun status(context: Context, state: UiState, local: LocalPhase, wakeOn: Boolean): Status = when {
+    local == LocalPhase.Listening -> Status(
+        context.getString(R.string.status_listening),
+        context.getString(R.string.status_hint_local_listening),
+        context.getString(R.string.badge_on_phone),
+        Phase.Listening,
+        true,
+    )
+    local == LocalPhase.Doing -> Status(
+        context.getString(R.string.status_working),
+        context.getString(R.string.status_hint_local_doing),
+        context.getString(R.string.badge_on_phone),
+        Phase.Connecting,
+        true,
+    )
+    local == LocalPhase.Speaking -> Status(
+        context.getString(R.string.status_speaking),
+        context.getString(R.string.status_hint_local_speaking),
+        context.getString(R.string.badge_on_phone),
+        Phase.Speaking,
+        true,
+    )
+    state.phase == Phase.Connecting -> Status(
+        context.getString(R.string.status_thinking),
+        context.getString(R.string.status_hint_connecting),
+        context.getString(R.string.badge_gemini),
+        Phase.Connecting,
+        true,
+    )
+    state.phase == Phase.Listening -> Status(
+        context.getString(R.string.status_listening),
+        context.getString(R.string.status_hint_gemini_listening),
+        context.getString(R.string.badge_gemini),
+        Phase.Listening,
+        true,
+    )
+    state.phase == Phase.Speaking -> Status(
+        context.getString(R.string.status_speaking),
+        context.getString(R.string.status_hint_speaking),
+        context.getString(R.string.badge_gemini),
+        Phase.Speaking,
+        true,
+    )
     else -> Status(
-        "Standby",
-        state.problem ?: if (wakeOn) "Say \"${WakeWordModel.PHRASE}\", or tap the mic." else "Tap the mic to talk.",
-        if (wakeOn) "Wake word on" else "Wake word off",
+        context.getString(R.string.status_standby),
+        state.problem ?: if (wakeOn) context.getString(R.string.status_hint_standby_wake, WakeWordModel.PHRASE) else context.getString(R.string.status_hint_standby_tap),
+        if (wakeOn) context.getString(R.string.badge_wake_on) else context.getString(R.string.badge_wake_off),
         Phase.Off,
         false,
     )
@@ -105,7 +144,7 @@ fun HomeScreen(
         val granted = ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
         if (granted) onStart() else askMic.launch(Manifest.permission.RECORD_AUDIO)
     }
-    val now = status(state, localPhase, wakeOn)
+    val now = status(context, state, localPhase, wakeOn)
     val problem = state.problem != null && !now.live
 
     Column(Modifier.fillMaxSize().padding(horizontal = 20.dp)) {
@@ -120,7 +159,7 @@ fun HomeScreen(
                 level = level,
                 modifier = Modifier
                     .size(220.dp)
-                    .semantics { contentDescription = "${Branding.ASSISTANT_NAME}: ${now.title}" }
+                    .semantics { contentDescription = context.getString(R.string.desc_orb_status, Branding.ASSISTANT_NAME, now.title) }
                     .clickable(remember { MutableInteractionSource() }, indication = null) {
                         when (state.phase) {
                             Phase.Off -> if (localPhase == LocalPhase.Idle) startListening()
@@ -164,7 +203,11 @@ fun HomeScreen(
                     IconButtonDefaults.filledIconButtonColors()
                 },
             ) {
-                Icon(if (live) Icons.Filled.Close else MicIcon, contentDescription = if (live) "Stop" else "Talk", modifier = Modifier.size(30.dp))
+                Icon(
+                    if (live) Icons.Filled.Close else MicIcon,
+                    contentDescription = if (live) stringResource(R.string.action_stop) else stringResource(R.string.action_talk),
+                    modifier = Modifier.size(30.dp),
+                )
             }
         }
     }
@@ -177,14 +220,19 @@ private fun QuickActions(onQuick: (LocalCommand) -> String, favourites: List<Loc
     var answer by remember { mutableStateOf<String?>(null) }
     // Learned favourites first, topped up with the defaults.
     val learned = favourites.mapNotNull { command -> HabitKeys.key(command)?.let { HabitKeys.describe(it).replaceFirstChar(Char::uppercase) to { command } } }
+    val torchOffLabel = stringResource(R.string.quick_torch_off)
+    val torchOnLabel = stringResource(R.string.quick_torch)
+    val batteryLabel = stringResource(R.string.quick_battery)
+    val timeLabel = stringResource(R.string.quick_time)
+    val pauseLabel = stringResource(R.string.quick_pause)
     val defaults = listOf(
-        (if (torchOn) "Torch off" else "Torch") to {
+        (if (torchOn) torchOffLabel else torchOnLabel) to {
             torchOn = !torchOn
             LocalCommand.Torch(torchOn)
         },
-        "Battery" to { LocalCommand.Battery },
-        "Time" to { LocalCommand.Time },
-        "Pause" to { LocalCommand.Media(MediaKey.Pause) },
+        batteryLabel to { LocalCommand.Battery },
+        timeLabel to { LocalCommand.Time },
+        pauseLabel to { LocalCommand.Media(MediaKey.Pause) },
     )
     val actions = (learned + defaults.filter { d -> learned.none { it.first.startsWith(d.first, ignoreCase = true) } }).take(4)
     Column {
@@ -210,11 +258,11 @@ private fun QuickActions(onQuick: (LocalCommand) -> String, favourites: List<Loc
 @Composable
 private fun Recent(entries: List<ActivityLog.Entry>, onSeeAll: () -> Unit) {
     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-        Text("RECENT", style = MaterialTheme.typography.titleSmall, color = Muted, modifier = Modifier.weight(1f).padding(start = 4.dp))
-        TextButton(onClick = onSeeAll) { Text("See all") }
+        Text(stringResource(R.string.recent_header), style = MaterialTheme.typography.titleSmall, color = Muted, modifier = Modifier.weight(1f).padding(start = 4.dp))
+        TextButton(onClick = onSeeAll) { Text(stringResource(R.string.recent_see_all)) }
     }
     if (entries.isEmpty()) {
-        Text("Nothing yet. What you ask shows up here.", style = MaterialTheme.typography.bodySmall, color = Muted, modifier = Modifier.padding(start = 4.dp))
+        Text(stringResource(R.string.recent_empty), style = MaterialTheme.typography.bodySmall, color = Muted, modifier = Modifier.padding(start = 4.dp))
     }
     entries.forEach { ActivityRow(it) }
 }

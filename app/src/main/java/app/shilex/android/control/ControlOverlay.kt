@@ -43,6 +43,26 @@ class ControlOverlay(private val service: AccessibilityService) {
     /** Set by the Stop button; cleared when a new voice session starts. */
     @Volatile var stopped = false
 
+    /** True if coordinates fall within confirming card, the active strip, or handover card. */
+    fun containsPoint(x: Float, y: Float): Boolean {
+        if (confirming) return true
+        val s = strip
+        if (s != null && s.isAttachedToWindow) {
+            val loc = IntArray(2)
+            s.getLocationOnScreen(loc)
+            val rect = android.graphics.Rect(loc[0], loc[1], loc[0] + s.width, loc[1] + s.height)
+            if (rect.contains(x.toInt(), y.toInt())) return true
+        }
+        val c = card
+        if (c != null && c.isAttachedToWindow) {
+            val loc = IntArray(2)
+            c.getLocationOnScreen(loc)
+            val rect = android.graphics.Rect(loc[0], loc[1], loc[0] + c.width, loc[1] + c.height)
+            if (rect.contains(x.toInt(), y.toInt())) return true
+        }
+        return false
+    }
+
     /** Shows the strip for a few seconds after each action. */
     fun showActive() = main.post {
         if (strip == null) {
