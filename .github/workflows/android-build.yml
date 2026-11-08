@@ -29,26 +29,32 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Locate Android SDK Manager
+      - name: Setup Android SDK
         run: |
           echo "$ANDROID_HOME/cmdline-tools/latest/bin" >> "$GITHUB_PATH"
           echo "$ANDROID_HOME/platform-tools" >> "$GITHUB_PATH"
 
-      - name: Accept Android SDK Licenses
-        run: |
-          yes | sdkmanager --licenses || true
-
       - name: Install Android SDK Components
         run: |
+          yes | sdkmanager --licenses || true
           sdkmanager \
             "platforms;android-35" \
             "build-tools;35.0.0" \
             "ndk;27.0.12077973" \
             "cmake;3.22.1"
 
-      - name: Verify Android SDK
+      - name: Generate Debug Keystore
         run: |
-          sdkmanager --list_installed
+          keytool -genkeypair \
+            -v \
+            -keystore debug.keystore \
+            -storepass android \
+            -alias androiddebugkey \
+            -keypass android \
+            -keyalg RSA \
+            -keysize 2048 \
+            -validity 10000 \
+            -dname "CN=Android Debug,O=Android,C=US"
 
       - name: Build Debug APK
         run: |
